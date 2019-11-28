@@ -1,5 +1,7 @@
 <template>
-<div></div>
+<div>
+    123123
+</div>
 </template>
 
 <script>

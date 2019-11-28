@@ -9,6 +9,7 @@ import './permission'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
+require('./mock/mock.js')
 Vue.config.productionTip = false
 Vue.use(iView)
 Vue.use(ElementUI)
