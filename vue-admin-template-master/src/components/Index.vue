@@ -210,7 +210,7 @@ export default {
 
             // 设置用户信息
             this.userName = this.adminName
-            this.userImg = localStorage.getItem('userImg')
+            this.userImg = this.$cookie.get('userImg')
 
             this.main = document.querySelector('.sec-right')
             this.asideArrowIcons = document.querySelectorAll('aside .ivu-icon-ios-arrow-down')
@@ -534,11 +534,11 @@ export default {
                 })
             }).then((res) => {
                 if (res && res.data.code == 0) {
-                    console.log(res);
                     this.userId = res.data.data.adminId
                     this.adminName = res.data.data.adminName
                     this.adminUsername = res.data.data.adminUsername
                     this.adminAuthority = res.data.data.adminAuthority
+
                 }else{
                     this.$message.error(res.data.msg)
                 }

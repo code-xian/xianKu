@@ -29,7 +29,8 @@ export default {
                 isShowLoading: false,
                 bg: {},
                 username:'',
-                password:''
+                password:'',
+                redirect:'',
         }
     },
     created() {
@@ -78,10 +79,10 @@ export default {
             }
         },
         register() {
-            console.log('注册账号')
+            this.$message.warning("没得给你注册账号")
         },
         forgetPwd() {
-            console.log('忘记密码')
+            this.$message.warning("不能忘记密码")
         },
         submit() {
             this.$http({
@@ -91,24 +92,16 @@ export default {
                     adminUsername:this.account,
                     adminPassword:this.pwd,
                 })
-                // params: {
-                //     adminUsername:this.account,
-                //         adminPassword:this.pwd,
-                // }
             }).then( (res) => {
-                console.log(res);
-                if (res.data) {
+                if (res.data&&res.data.code==0) {
                     this.isShowLoading = true
                     // 登陆成功 设置用户信息
-                    localStorage.setItem('userImg', 'https://avatars3.githubusercontent.com/u/22117876?s=460&v=4')
+                    this.$cookie.set('userImg', 'https://foter.com/photos/394/anime-pet-kitty.jpg?s=t')
                     // 登陆成功 假设这里是后台返回的 token
-                    localStorage.setItem('token', res.data.token)
-                    // localStorage.setItem('userName', '小明')
+                    this.$cookie.set('token','123')
                     if (res.data.data && res.data.data == 1) {
-                        console.log('add');
                         this.addMenus();
                     }else if(res.data.data && res.data.data == 0) {
-                        console.log('delete');
                         this.deleteMenus(res.data.data)
                     }
                     this.$cookie.set('adminUsername',this.account)

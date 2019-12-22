@@ -44,8 +44,8 @@ function generateRoutes(children, item) {
 export function resetTokenAndClearUser() {  //TODO
     // 退出登陆 清除用户资料
     localStorage.setItem('token', '')
-    localStorage.setItem('userImg', '')
-    localStorage.setItem('userName', '')
+    // localStorage.setItem('userImg', '')
+    // localStorage.setItem('userName', '')
     Vue.cookie.delete('token')
     // 重设路由
     resetRouter()
