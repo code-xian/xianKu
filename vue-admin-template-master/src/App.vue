@@ -7,8 +7,24 @@
 </template>
 
 <script>
+    import {getCookie, removeArray} from "./utils";
+
 export default {
-    name: 'App'
+    name: 'App',
+    // created(){
+    //     if(this.$cookie.get('adminAuthority')==1) {
+    //         console.log(this.$cookie.get('adminAuthority'));
+    //         console.log(1111);
+    //     removeArray(this.$store.state.menuItems, '系统管理');
+    //         console.log(this.$store.state.menuItems);
+    //         // const routes = menusToRoutes(store.state.menuItems);
+    //     // 动态添加路由
+    //     // router.addRoutes(routes)
+    //     }
+    // },
+    // methods:{
+    //
+    // }
 }
 </script>
 

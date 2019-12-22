@@ -10,23 +10,26 @@
                 <Input type="password" v-model="pwd" prefix="md-lock" placeholder="密码" clearable @on-blur="verifyPwd"/>
                 <p class="error">{{pwdError}}</p>
             </div>
-            <Button :loading="isShowLoading" class="submit" type="primary" @click="submit">登陆</Button>
+            <Button :loading="isShowLoading" class="submit" type="primary" @click="submit" >登陆</Button>
             <p class="account"><span @click="register">注册账号</span> | <span @click="forgetPwd">忘记密码</span></p>
         </div>
     </div>
 </template>
 
 <script>
+
 export default {
     name: 'login',
     data() {
         return {
-            account: 'admin',
-            pwd: 'admin',
-            accountError: '',
-            pwdError: '',
-            isShowLoading: false,
-            bg: {}
+                account: '',
+                pwd: '',
+                accountError: '',
+                pwdError: '',
+                isShowLoading: false,
+                bg: {},
+                username:'',
+                password:''
         }
     },
     created() {
@@ -41,16 +44,35 @@ export default {
         }
     },
     methods: {
+        deleteMenus(id) {
+            if (id !== '1') {
+                this.$store.dispatch('delete_menus', '系统管理')
+            }
+        },
+        addMenus() {
+            let newMenus={
+                text: '系统管理',
+                type: 'ios-paper',
+                children: [
+                    {
+                        type: 'ios-grid',
+                        name: 'userControl',
+                        text: '管理员管理'
+                    },
+                ]
+            }
+            this.$store.dispatch('push_menus', newMenus)
+        },
         verifyAccount(e) {
-            if (this.account !== 'admin') {
-                this.accountError = '账号为admin'
+            if (this.account !== 'zhangsan') {
+                this.accountError = '账号为zhangsan'
             } else {
                 this.accountError = ''
             }
         },
         verifyPwd(e) {
-            if (this.pwd !== 'admin') {
-                this.pwdError = '密码为admin'
+            if (this.pwd !== '123456') {
+                this.pwdError = '密码为123456'
             } else {
                 this.pwdError = ''
             }
@@ -62,23 +84,44 @@ export default {
             console.log('忘记密码')
         },
         submit() {
-            if (this.account === 'admin' && this.pwd === 'admin') {
-                this.isShowLoading = true
-                // 登陆成功 设置用户信息
-                localStorage.setItem('userImg', 'https://avatars3.githubusercontent.com/u/22117876?s=460&v=4')
-                localStorage.setItem('userName', '小明')
-                // 登陆成功 假设这里是后台返回的 token
-                localStorage.setItem('token', 'i_am_token')
-                this.$router.push({path: this.redirect || '/'})
-            } else {
-                if (this.account !== 'admin') {
-                    this.accountError = '账号为admin'
-                } 
+            this.$http({
+                method: 'post',
+                url: '/admin/login',
+                data:this.$http.adornData({
+                    adminUsername:this.account,
+                    adminPassword:this.pwd,
+                })
+                // params: {
+                //     adminUsername:this.account,
+                //         adminPassword:this.pwd,
+                // }
+            }).then( (res) => {
+                console.log(res);
+                if (res.data) {
+                    this.isShowLoading = true
+                    // 登陆成功 设置用户信息
+                    localStorage.setItem('userImg', 'https://avatars3.githubusercontent.com/u/22117876?s=460&v=4')
+                    // 登陆成功 假设这里是后台返回的 token
+                    localStorage.setItem('token', res.data.token)
+                    // localStorage.setItem('userName', '小明')
+                    if (res.data.data && res.data.data == 1) {
+                        console.log('add');
+                        this.addMenus();
+                    }else if(res.data.data && res.data.data == 0) {
+                        console.log('delete');
+                        this.deleteMenus(res.data.data)
+                    }
+                    this.$cookie.set('adminUsername',this.account)
+                    this.$cookie.set('adminAuthority',res.data.data)
+                    this.$router.push({path: this.redirect || '/'})
+                } else {
+                    this.account='',
+                    this.pwd='',
+                    this.$message.error(res.data.msg)
+                    this.isShowLoading = false
+                }
+            });
 
-                if (this.pwd !== 'admin') {
-                    this.pwdError = '密码为admin'
-                } 
-            }
         }
     }
 }

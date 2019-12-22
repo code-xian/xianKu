@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import user from './user'
 
 Vue.use(Vuex)
 
@@ -21,10 +22,21 @@ const store = new Vuex.Store({
                         type: 'ios-grid',
                         name: 'salesOrderList',
                         text: '销售订单列表'
-                    },{
+                    },
+                    {
                         type: 'ios-grid',
-                        name: 'invoiceList',
-                        text: '出库单列表'
+                        name: 'outList',
+                        text: '销售出库单列表'
+                    },
+                    {
+                        type: 'ios-grid',
+                        name: 'returnedSale',
+                        text: '销售退货单列表'
+                    },
+                    {
+                        type: 'ios-grid',
+                        name: 'exchangedSale',
+                        text: '销售换货单列表'
                     },
                 ]
             },
@@ -38,21 +50,21 @@ const store = new Vuex.Store({
                         text: '采购订单列表'
                     },
                     {
-                        text: '三级菜单',
-                        type: 'ios-paper',
-                        children: [
-                            {
-                                type: 'md-lock',
-                                name: 'password',
-                                text: '修改密码'
-                            },
-                            {
-                                type: 'md-person',
-                                name: 'userinfo',
-                                text: '基本资料',
-                            }
-                        ]
-                    }
+                        type: 'ios-grid',
+                        name: 'inList',
+                        text: '采购入库单列表'
+                    },
+                    {
+                        type: 'ios-grid',
+                        name: 'returnedPurchase',
+                        text: '采购退货单列表'
+                    },
+                    {
+                        type: 'ios-grid',
+                        name: 'exchangePurchase',
+                        text: '采购换货单列表'
+                    },
+
                 ]
             },
             {
@@ -61,13 +73,13 @@ const store = new Vuex.Store({
                 children: [
                     {
                         type: 'ios-grid',
-                        name: 'inList',
-                        text: '入库管理'
+                        name: 'sendList',
+                        text: '发货'
                     },{
                         type: 'ios-grid',
-                        name: 'outList',
-                        text: '出库管理'
-                    },{
+                        name: 'receiveList',
+                        text: '收货'
+                    }, {
                         type: 'ios-grid',
                         name: 'adjustmentList',
                         text: '库存调整'
@@ -86,7 +98,6 @@ const store = new Vuex.Store({
                     },
                 ]
             },
-
             // {
             //     text: '其他',
             //     type: 'ios-paper',
@@ -132,6 +143,21 @@ const store = new Vuex.Store({
                 ]
             },
             {
+              text:'往来单位',
+              type:'ios-paper',
+              children:[
+                  {
+                      type: 'md-person',
+                      name:'customer',
+                      text:'客户'
+                  },{
+                      type: 'md-person',
+                      name:'supplier',
+                      text:'供应商'
+                  }
+              ]
+            },
+            {
                 text: '系统管理',
                 type: 'ios-paper',
                 children: [
@@ -141,13 +167,37 @@ const store = new Vuex.Store({
                         text: '管理员管理'
                     },
                 ]
-            },
+            }
         ],
     },
     mutations: {
         setMenus(state, items) {
             state.menuItems = [...items]
         },
+        pushMenus(state, items) {
+            if(JSON.stringify(state.menuItems).indexOf(JSON.stringify(items))==-1){
+                state.menuItems.push(items); // 进行动态的操作
+            }
+
+        },
+        deleteMenus(state , items){
+            state.menuItems.map((value, index) => {
+                if(value.text == items){
+                    state.menuItems.splice(index,1)
+                }
+            })
+        }
+    },
+    actions:{
+        push_menus({commit},item) {
+            commit('pushMenus',item)
+        },
+        delete_menus({commit},item) {
+            commit('deleteMenus',item)
+        }
+    },
+    modules:{
+        user
     }
 })
 

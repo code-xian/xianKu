@@ -67,7 +67,7 @@
                         <!-- 下拉菜单 -->
                         <Dropdown trigger="click" @on-click="userOperate" @on-visible-change="showArrow">
                             <div class="pointer">
-                                <span>{{userName}}</span>
+                                <span>{{this.$store.state.user.adminName}}</span>
                                 <Icon v-show="arrowDown" type="md-arrow-dropdown"/>
                                 <Icon v-show="arrowUp" type="md-arrow-dropup"/>
                             </div>
@@ -159,60 +159,66 @@ export default {
             userImg: '',
         }
     },
+    // created() {
+    //     // 已经为ajax请求设置了loading 请求前自动调用 请求完成自动结束
+    //     // 添加请求拦截器
+    //     this.$axios.interceptors.request.use(config => {
+    //         this.showLoading = true
+    //         // 在发送请求之前做些什么
+    //         return config
+    //     }, error => {
+    //         this.showLoading = false
+    //         // 对请求错误做些什么
+    //         return Promise.reject(error)
+    //     })
+    //     // 添加响应拦截器
+    //     this.$axios.interceptors.response.use(response => {
+    //         // 可以在这里对返回的数据进行错误处理 如果返回的 code 不对 直接报错或退出登陆
+    //         // 就可以省去在业务代码里重复判断
+    //         // 例子
+    //         // if (res.code != 0) {
+    //         //     this.$Message.error(res.msg)
+    //         //     return Promise.reject()
+    //         // }
+    //         this.showLoading = false
+    //         const res = response.data
+    //         return res
+    //     }, error => {
+    //         this.showLoading = false
+    //         // 对响应错误做点什么
+    //         return Promise.reject(error)
+    //     })
+    // },
     created() {
-        // 已经为ajax请求设置了loading 请求前自动调用 请求完成自动结束
-        // 添加请求拦截器
-        this.$axios.interceptors.request.use(config => {
-            this.showLoading = true
-            // 在发送请求之前做些什么
-            return config
-        }, error => {
-            this.showLoading = false
-            // 对请求错误做些什么
-            return Promise.reject(error)
-        })
-        // 添加响应拦截器
-        this.$axios.interceptors.response.use(response => {
-            // 可以在这里对返回的数据进行错误处理 如果返回的 code 不对 直接报错或退出登陆
-            // 就可以省去在业务代码里重复判断
-            // 例子
-            // if (res.code != 0) {
-            //     this.$Message.error(res.msg)
-            //     return Promise.reject()
-            // }
-            this.showLoading = false
-            const res = response.data
-            return res
-        }, error => {
-            this.showLoading = false
-            // 对响应错误做点什么
-            return Promise.reject(error)
-        })
+        this.getUserInfo();
     },
     mounted() {
-        // 第一个标签
-        const name = this.$route.name
-        this.currentPage = name
-        this.tagsArry.push({
-            text: this.nameToTitle[name],
-            name: name
+        this.$nextTick(()=>{
+            // 第一个标签
+            const name = this.$route.name
+            this.currentPage = name
+            this.tagsArry.push({
+                text: this.nameToTitle[name],
+                name: name
+            })
+
+            // 根据路由打开对应的菜单栏
+            this.openMenus = this.getMenus(name)
+            this.$nextTick(() => {
+                this.$refs.asideMenu.updateOpened()
+            })
+
+            // 设置用户信息
+            this.userName = this.adminName
+            this.userImg = localStorage.getItem('userImg')
+
+            this.main = document.querySelector('.sec-right')
+            this.asideArrowIcons = document.querySelectorAll('aside .ivu-icon-ios-arrow-down')
+
+            // 监听窗口大小 自动收缩侧边栏
+            this.monitorWindowSize()
         })
 
-        // 根据路由打开对应的菜单栏
-        this.openMenus = this.getMenus(name)
-        this.$nextTick(() => {
-            this.$refs.asideMenu.updateOpened()
-        })
-
-        // 设置用户信息
-        this.userName = localStorage.getItem('userName')
-        this.userImg = localStorage.getItem('userImg')
-
-        this.main = document.querySelector('.sec-right')
-        this.asideArrowIcons = document.querySelectorAll('aside .ivu-icon-ios-arrow-down')
-
-        // 监听窗口大小 自动收缩侧边栏
-        this.monitorWindowSize()
     },
     watch: {
         $route(to) {
@@ -255,6 +261,23 @@ export default {
 
             return obj
         },
+        userId: {
+            get () { return this.$store.state.user.userId },
+            set (val) { this.$store.commit('user/userId', val) }
+        },
+        adminName: {
+            get () { return this.$store.state.user.adminName },
+            set (val) { this.$store.commit('user/adminName', val) }
+        },
+        adminUsername: {
+            get () { return this.$store.state.user.adminUsername },
+            set (val) { this.$store.commit('user/adminUsername', val) }
+        },
+        adminAuthority: {
+            get () { return this.$store.state.user.adminAuthority },
+            set (val) { this.$store.commit('user/adminAuthority', val) }
+        },
+
     },
     methods: {
         getMenus(name) {
@@ -500,6 +523,26 @@ export default {
                     this.processNameToTitle(obj, e, text? `${text} / ${data.text}` : data.text)
                 })
             }
+        },
+        // 获取当前管理员信息
+        getUserInfo () {
+            this.$http({
+                url: '/admin/query',
+                method: 'get',
+                params: this.$http.adornParams({
+                    adminUsername:this.$cookie.get("adminUsername")
+                })
+            }).then((res) => {
+                if (res && res.data.code == 0) {
+                    console.log(res);
+                    this.userId = res.data.data.adminId
+                    this.adminName = res.data.data.adminName
+                    this.adminUsername = res.data.data.adminUsername
+                    this.adminAuthority = res.data.data.adminAuthority
+                }else{
+                    this.$message.error(res.data.msg)
+                }
+            })
         }
     }
 }
