@@ -60,7 +60,7 @@ public class AdminDaoTest {
 
     @Test
     public void findAdministratorsByAdminUsernameTest() {
-        Administrators zhangsan = adminDao.findAdministratorsByAdminUsername("zhangsan1");
+        Administrators zhangsan = adminDao.findAdministratorsByAdminUsername("zhangsan");
         System.out.println(zhangsan);
     }
 

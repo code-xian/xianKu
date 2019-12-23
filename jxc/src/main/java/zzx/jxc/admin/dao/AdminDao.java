@@ -6,7 +6,7 @@ import zzx.jxc.admin.entity.Administrators;
 import java.util.List;
 
 public interface AdminDao extends JpaRepository<Administrators,Integer> {
-    public List<Administrators> findByAdminUsername(String name);
+    List<Administrators> findByAdminUsername(String name);
 
-    public Administrators findAdministratorsByAdminUsername(String name);
+    Administrators findAdministratorsByAdminUsername(String name);
 }
