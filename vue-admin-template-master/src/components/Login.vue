@@ -3,11 +3,11 @@
         <div class="container">
             <p class="title">WELCOME</p>
             <div class="input-c">
-                <Input prefix="ios-contact" v-model="account" placeholder="用户名" clearable @on-blur="verifyAccount"/>
+                    <Input  prefix="ios-contact" v-model="form.account" placeholder="用户名" clearable @on-blur="verifyAccount(form.account)"/>
                 <p class="error">{{accountError}}</p>
             </div>
             <div class="input-c">
-                <Input type="password" v-model="pwd" prefix="md-lock" placeholder="密码" clearable @on-blur="verifyPwd"/>
+                    <Input  type="password" v-model="form.pwd" prefix="md-lock" placeholder="密码" clearable @on-blur="verifyPwd(form.pwd)"/>
                 <p class="error">{{pwdError}}</p>
             </div>
             <Button :loading="isShowLoading" class="submit" type="primary" @click="submit" >登陆</Button>
@@ -22,15 +22,15 @@ export default {
     name: 'login',
     data() {
         return {
+            form:{
                 account: '',
                 pwd: '',
-                accountError: '',
-                pwdError: '',
-                isShowLoading: false,
-                bg: {},
-                username:'',
-                password:'',
-                redirect:'',
+            },
+            accountError: '',
+            pwdError: '',
+            isShowLoading: false,
+            bg: {},
+            redirect:'',
         }
     },
     created() {
@@ -65,15 +65,15 @@ export default {
             this.$store.dispatch('push_menus', newMenus)
         },
         verifyAccount(e) {
-            if (this.account !== 'zhangsan') {
-                this.accountError = '账号为zhangsan'
+            if (this.form.account == '') {
+                this.accountError = '账号不能为空'
             } else {
                 this.accountError = ''
             }
         },
         verifyPwd(e) {
-            if (this.pwd !== '123456') {
-                this.pwdError = '密码为123456'
+            if (this.form.pwd == '') {
+                this.pwdError = '密码不能为空'
             } else {
                 this.pwdError = ''
             }
@@ -85,36 +85,35 @@ export default {
             this.$message.warning("不能忘记密码")
         },
         submit() {
-            this.$http({
-                method: 'post',
-                url: '/admin/login',
-                data:this.$http.adornData({
-                    adminUsername:this.account,
-                    adminPassword:this.pwd,
-                })
-            }).then( (res) => {
-                if (res.data&&res.data.code==0) {
-                    this.isShowLoading = true
-                    // 登陆成功 设置用户信息
-                    this.$cookie.set('userImg', 'https://foter.com/photos/394/anime-pet-kitty.jpg?s=t')
-                    // 登陆成功 假设这里是后台返回的 token
-                    this.$cookie.set('token','123')
-                    if (res.data.data && res.data.data == 1) {
-                        this.addMenus();
-                    }else if(res.data.data && res.data.data == 0) {
-                        this.deleteMenus(res.data.data)
-                    }
-                    this.$cookie.set('adminUsername',this.account)
-                    this.$cookie.set('adminAuthority',res.data.data)
-                    this.$router.push({path: this.redirect || '/'})
-                } else {
-                    this.account='',
-                    this.pwd='',
-                    this.$message.error(res.data.msg)
-                    this.isShowLoading = false
-                }
-            });
-
+                    this.$http({
+                        method: 'post',
+                        url: '/admin/login',
+                        data:this.$http.adornData({
+                            adminUsername:this.form.account,
+                            adminPassword:this.form.pwd,
+                        })
+                    }).then( (res) => {
+                        if (res.data&&res.data.code==0) {
+                            this.isShowLoading = true
+                            // 登陆成功 设置用户信息
+                            this.$cookie.set('userImg', 'https://foter.com/photos/394/anime-pet-kitty.jpg?s=t')
+                            // 登陆成功 假设这里是后台返回的 token
+                            this.$cookie.set('token','123')
+                            if (res.data.data && res.data.data == 1) {
+                                this.addMenus();
+                            }else if(res.data.data && res.data.data == 0) {
+                                this.deleteMenus(res.data.data)
+                            }
+                            this.$cookie.set('adminUsername',this.form.account)
+                            this.$cookie.set('adminAuthority',res.data.data)
+                            this.$router.push({path: this.redirect || '/'})
+                        } else {
+                            this.form.account='',
+                                this.form.pwd='',
+                                this.$message.error(res.data.msg)
+                            this.isShowLoading = false
+                        }
+                    });
         }
     }
 }

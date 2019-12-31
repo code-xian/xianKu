@@ -12,10 +12,11 @@ import zzx.jxc.util.ResultVOUtil;
 
 @RestController
 @RequestMapping("/admin")
-public class adminController {
+public class AdminController {
 
     @Autowired
     private AdminService adminService;
+
     @CrossOrigin(origins = "*")
     @PostMapping("/login")
     public ResultVO login(@RequestBody Administrators administrators) {

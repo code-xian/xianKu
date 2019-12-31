@@ -1,9 +1,8 @@
 import "babel-polyfill";
 import router from './router'
 import store from './store'
-import { menusToRoutes, resetTokenAndClearUser ,removeArray,getCookie} from './utils'
+import { menusToRoutes, resetTokenAndClearUser} from './utils'
 import { LoadingBar } from 'view-design'
-import axios from 'axios'
 import Vue from 'vue'
 
 // 是否有菜单数据
@@ -40,11 +39,6 @@ router.beforeEach(async (to, from, next) => {
                     next(`/login?redirect=${to.path}`)
                 }
             }
-
-
-
-
-
 })
 
 router.afterEach(() => {

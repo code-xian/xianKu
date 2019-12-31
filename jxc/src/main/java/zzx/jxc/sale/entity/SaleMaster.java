@@ -12,6 +12,7 @@ import java.util.Date;
 @Data
 @DynamicUpdate
 public class SaleMaster {
+
     @Id
     private String saleId;
     private String storeName;

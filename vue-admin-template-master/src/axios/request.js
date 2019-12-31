@@ -1,11 +1,10 @@
 import Vue from 'vue'
 import axios from 'axios'
-import router from '@/router'
 import qs from 'qs'
 import merge from 'lodash/merge'
 
 // 设置基础URL
-axios.defaults.baseURL = 'http://localhost:8090/jxc'
+axios.defaults.baseURL = 'http://localhost:8091/jxc'
 // 设置请求超时时间
 axios.defaults.timeout = 5000
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8'

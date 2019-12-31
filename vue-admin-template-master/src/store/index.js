@@ -149,7 +149,7 @@ const store = new Vuex.Store({
                   {
                       type: 'md-person',
                       name:'customer',
-                      text:'客户'
+                      text:'线下门店'
                   },{
                       type: 'md-person',
                       name:'supplier',

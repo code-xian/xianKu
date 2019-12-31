@@ -41,9 +41,9 @@ function generateRoutes(children, item) {
     }
 }
 
-export function resetTokenAndClearUser() {  //TODO
+export function resetTokenAndClearUser() {
     // 退出登陆 清除用户资料
-    localStorage.setItem('token', '')
+    // localStorage.setItem('token', '')
     // localStorage.setItem('userImg', '')
     // localStorage.setItem('userName', '')
     Vue.cookie.delete('token')
@@ -73,3 +73,5 @@ export function getCookie(name) {
     else
         return null;
 }
+
+
