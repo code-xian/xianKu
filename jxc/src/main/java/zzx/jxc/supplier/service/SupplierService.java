@@ -11,9 +11,9 @@ public interface SupplierService {
 
     Supplier save(Supplier supplier);
 
-    void delete(String id);
+    void delete(Integer id);
 
     List<Supplier> findAll();
 
-    Supplier findOneById(String id);
+    Supplier findOneById(Integer id);
 }

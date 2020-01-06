@@ -8,15 +8,17 @@ import java.util.List;
 
 public interface AdminService {
 
-    public Administrators getOne(Integer id);
+    Administrators getOne(Integer id);
 
-    public List<Administrators> findAll();
+    List<Administrators> findAll();
 
-    public Page<Administrators> findAll(Pageable pageable);
+    Page<Administrators> findAll(Administrators administrators, Pageable pageable);
 
-    public Administrators save(Administrators administrators);
+    Administrators save(Administrators administrators);
 
-    public Administrators findAdministratorsByAdminUsername(String AdminUsername);
+    Administrators findAdministratorsByAdminUsername(String AdminUsername);
 
-    public List<Administrators> findByAdminUsername(String AdminUsername);
+    List<Administrators> findByAdminUsername(String AdminUsername);
+
+    void delete(Integer id);
 }

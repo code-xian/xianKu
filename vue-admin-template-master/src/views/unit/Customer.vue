@@ -12,7 +12,7 @@
 <!--                </el-select>-->
 <!--            </el-form-item>-->
             <el-form-item label="门店名称">
-                <el-input  placeholder="请输入活动名称" clearable v-model="dataForm.storeName"></el-input>
+                <el-input  placeholder="请输入门店名称" clearable v-model="dataForm.storeName"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button @click="getDataList()" type="warning">查询</el-button>
@@ -91,7 +91,7 @@
                   prop="storeNote"
                   header-align="center"
                   align="center"
-                  label="活动状态">
+                  label="门店简介">
                 </el-table-column>
 <!--                <el-table-column-->
 <!--                        prop="status"-->
@@ -137,8 +137,8 @@
                     :total="totalPage"
                     layout="total, sizes, prev, pager, next, jumper">
             </el-pagination>
-            <customer-add v-if="addVisible" ref="customerAdd" @refreshDataList="getDataList"></customer-add>
         </div>
+        <customer-add v-if="addVisible" ref="customerAdd" @refreshDataList="getDataList"></customer-add>
         <!-- 弹窗, 新增 / 修改 -->
         <!--    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>-->
         <!--    <minimenu-see v-if="seeDetailVisible" ref="minimenuSee"></minimenu-see>-->

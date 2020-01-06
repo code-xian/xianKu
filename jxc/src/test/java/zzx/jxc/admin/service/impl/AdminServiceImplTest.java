@@ -33,9 +33,9 @@ class AdminServiceImplTest {
 
     @Test
     void testFindAll() {
-        PageRequest pageRequest = PageRequest.of(0, 2);
-        Page<Administrators> all = adminService.findAll(pageRequest);
-        System.out.println(all.getTotalElements());
+        Administrators administrators = new Administrators();
+//        administrators.setAdminName("");
+        Page<Administrators> all = adminService.findAll(administrators, PageRequest.of(0, 5));
     }
 
     @Test

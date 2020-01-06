@@ -92,7 +92,7 @@ public class StockController {
             }
             return ResultVOUtil.success(list, "ok");
         } catch (Exception e) {
-            return ResultVOUtil.error(1, "查询下路列表失败");
+            return ResultVOUtil.error(1, "查询下拉列表失败");
         }
     }
 }

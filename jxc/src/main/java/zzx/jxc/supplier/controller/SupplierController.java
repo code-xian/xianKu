@@ -32,7 +32,7 @@ public class SupplierController {
                             @RequestParam Integer page,
                             @RequestParam Integer size) {
         try {
-            PageRequest pageRequest = PageRequest.of(page, size);
+            PageRequest pageRequest = PageRequest.of(page-1, size);
             Supplier supplier = new Supplier();
             supplier.setSupplierName(supplierName);
             supplier.setSupplierType(supplierType);
@@ -80,10 +80,10 @@ public class SupplierController {
         try {
             List<Supplier> supplierList = supplierService.findAll();
             List<String> supplierNameList = supplierList.stream().map(Supplier::getSupplierName).collect(Collectors.toList());
-            List<String> supplierIdList = supplierList.stream().map(Supplier::getSupplierId).collect(Collectors.toList());
-            ArrayList<Map<String,String>> list = new ArrayList();
+            List<Integer> supplierIdList = supplierList.stream().map(Supplier::getSupplierId).collect(Collectors.toList());
+            ArrayList<Map<String,Object>> list = new ArrayList();
             for (int key = 0; key < supplierNameList.size(); key++) {
-                Map<String, String> result = new HashMap();
+                Map<String, Object> result = new HashMap();
                 result.put("value", supplierIdList.get(key));
                 result.put("label",supplierNameList.get(key));
                 list.add(result);

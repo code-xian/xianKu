@@ -36,7 +36,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    public void delete(String id) {
+    public void delete(Integer id) {
         supplierDao.deleteById(id);
     }
 
@@ -46,7 +46,7 @@ public class SupplierServiceImpl implements SupplierService {
     }
 
     @Override
-    public Supplier findOneById(String id) {
+    public Supplier findOneById(Integer id) {
         return supplierDao.findSupplierBySupplierId(id);
     }
 }
