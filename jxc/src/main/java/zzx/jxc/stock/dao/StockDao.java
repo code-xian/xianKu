@@ -5,4 +5,5 @@ import zzx.jxc.stock.entity.Stock;
 
 public interface StockDao extends JpaRepository<Stock, String> {
     Stock findStockByStockId(String id);
+    long count();
 }

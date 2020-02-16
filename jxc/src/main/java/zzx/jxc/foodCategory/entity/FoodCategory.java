@@ -13,5 +13,4 @@ public class FoodCategory {
     @Id
     private String categoryId;
     private String categoryName;
-    private String stockId;
 }

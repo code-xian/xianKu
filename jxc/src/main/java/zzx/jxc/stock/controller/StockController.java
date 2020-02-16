@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import zzx.jxc.VO.ResultVO;
 import zzx.jxc.stock.entity.Stock;
 import zzx.jxc.stock.service.StockService;
+import zzx.jxc.util.CommonIdUtil;
 import zzx.jxc.util.ResultVOUtil;
 
 import java.util.ArrayList;
@@ -32,10 +33,14 @@ public class StockController {
                             @RequestParam Integer page,
                             @RequestParam Integer size) {
         try {
-            PageRequest pageRequest = PageRequest.of(page, size);
+            PageRequest pageRequest = PageRequest.of(page-1, size);
             Stock stock = new Stock();
             stock.setStockName(name);
-            stock.setStockType(typeNumber);
+            if(typeNumber.equals("全部")){
+                stock.setStockType("");
+            }else{
+                stock.setStockType(typeNumber);
+            }
             Page<Stock> stockList = stockService.findAll(stock, pageRequest);
             return ResultVOUtil.success(stockList, "ok");
         } catch (Exception e) {
@@ -51,12 +56,14 @@ public class StockController {
     @CrossOrigin(origins = "*")
     public ResultVO save(@RequestBody Stock stock) {
         try {
+            Integer count = (int)stockService.count();
+            String stockId = CommonIdUtil.commonId(count);
+            stock.setStockId(stockId);
             stockService.save(stock);
             return ResultVOUtil.success("ok");
         } catch (Exception e) {
             return ResultVOUtil.error(1, "新增仓库失败");
         }
-
     }
 
     /**
@@ -81,13 +88,13 @@ public class StockController {
     public ResultVO findStockList() {
         try {
             List<Stock> stockList = stockService.findAll();
-            List<String> stockIdList = stockList.stream().map(e -> e.getStockId()).collect(Collectors.toList());
-            List<String> stockNameList = stockList.stream().map(e -> e.getStockName()).collect(Collectors.toList());
+//            List<String> stockIdList = stockList.stream().map(Stock::getStockId).collect(Collectors.toList());
+            List<String> stockTypeList = stockList.stream().map(Stock::getStockType).collect(Collectors.toList());
             ArrayList<Map<String, String>> list = new ArrayList<>();
             for (int key = 0; key < stockList.size(); key++) {
                 Map<String, String> result = new HashMap<>();
-                result.put("value", stockIdList.get(key));
-                result.put("label", stockNameList.get(key));
+//                result.put("value", stockIdList.get(key));
+                result.put("label", stockTypeList.get(key));
                 list.add(result);
             }
             return ResultVOUtil.success(list, "ok");

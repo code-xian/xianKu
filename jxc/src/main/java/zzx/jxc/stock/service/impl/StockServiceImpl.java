@@ -44,8 +44,14 @@ public class StockServiceImpl implements StockService {
         return stockDao.findAll();
     }
 
+//    @Override
+//    public Stock findOneById(String id) {
+//        return stockDao.findStockByStockId(id);
+//    }
+
     @Override
-    public Stock findOneById(String id) {
-        return stockDao.findStockByStockId(id);
+    public long count() {
+        return stockDao.count();
     }
+
 }

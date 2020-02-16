@@ -47,9 +47,4 @@ class StockServiceImplTest {
         System.out.println(all);
     }
 
-    @Test
-    void findOneById() {
-        Stock oneById = stockService.findOneById("001");
-        System.out.println(oneById);
-    }
 }
