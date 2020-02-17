@@ -254,8 +254,6 @@
         .page{
             float:right;
             margin-top: 5px;
-
-
         }
     }
 </style>

@@ -82,8 +82,8 @@ const store = new Vuex.Store({
                     }, {
                         type: 'ios-grid',
                         name: 'adjustmentList',
-                        text: '库存调整'
-                    },{
+                        text: '仓库管理'
+                    }, {
                         type: 'ios-grid',
                         name: 'packagingList',
                         text: '食品分装'
