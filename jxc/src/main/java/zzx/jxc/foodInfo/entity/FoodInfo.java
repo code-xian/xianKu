@@ -2,6 +2,7 @@ package zzx.jxc.foodInfo.entity;
 
 
 import lombok.Data;
+import zzx.jxc.enums.FoodStatusEnum;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -16,11 +17,16 @@ public class FoodInfo {
     private String foodId;
     private String foodName;
     private BigDecimal foodPrice;
-    private Integer foodStock;
     private String foodDescription;
     private String categoryId;
     private Integer shelfLife;
-    private String stockId;
+    private Integer foodStatus = FoodStatusEnum.Up.getCode();
     private Date createTime;
     private Date updateTime;
+//    @OneToMany( mappedBy="foodInfo")
+//    private List<FoodStock> foodStock = new ArrayList<>();
+
+    public FoodInfo() {
+
+    }
 }

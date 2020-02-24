@@ -20,7 +20,7 @@ class StockServiceImplTest {
     @Test
     void findAll() {
         Stock stock = new Stock();
-        stock.setStockFzr("张三");
+//        stock.setStockFzr("张三");
         Page<Stock> all = stockService.findAll(stock, PageRequest.of(0, 5));
         System.out.println(all);
     }
@@ -38,7 +38,7 @@ class StockServiceImplTest {
 
     @Test
     void delete() {
-        stockService.delete("001");
+//        stockService.delete("001");
     }
 
     @Test

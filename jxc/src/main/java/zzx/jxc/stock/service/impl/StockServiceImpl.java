@@ -21,8 +21,8 @@ public class StockServiceImpl implements StockService {
     public Page<Stock> findAll(Stock stock, Pageable pageable) {
         ExampleMatcher exampleMatcher = ExampleMatcher.matching()
                 .withMatcher("stockName",ExampleMatcher.GenericPropertyMatchers.contains())//contains是storeId 包含的数据
-                .withMatcher("stockType",ExampleMatcher.GenericPropertyMatchers.contains());
-//          .withIgnorePaths("isFace");//isFace字段不参与匹配
+                .withMatcher("stockType",ExampleMatcher.GenericPropertyMatchers.contains())
+          .withIgnorePaths("stockStatus");//isFace字段不参与匹配
         //创建实例
         Example<Stock> example = Example.of(stock,exampleMatcher);
         Page<Stock> stockList = stockDao.findAll(example, pageable);
@@ -35,8 +35,13 @@ public class StockServiceImpl implements StockService {
     }
 
     @Override
-    public void delete(String id) {
-        stockDao.deleteById(id);
+    public void delete(Stock stock) {
+        stockDao.save(stock);
+    }
+
+    @Override
+    public void enable(Stock stock) {
+        stockDao.save(stock);
     }
 
     @Override
@@ -44,10 +49,10 @@ public class StockServiceImpl implements StockService {
         return stockDao.findAll();
     }
 
-//    @Override
-//    public Stock findOneById(String id) {
-//        return stockDao.findStockByStockId(id);
-//    }
+    @Override
+    public Stock findOneById(String id) {
+        return stockDao.findStockByStockId(id);
+    }
 
     @Override
     public long count() {

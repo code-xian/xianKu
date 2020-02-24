@@ -5,4 +5,5 @@ import zzx.jxc.foodCategory.entity.FoodCategory;
 
 public interface FoodCategoryDao extends JpaRepository<FoodCategory,String> {
     long count();
+    FoodCategory findFoodCategoryByCategoryId(String CategoryId);
 }

@@ -12,11 +12,13 @@ public interface StockService {
 
     Stock save(Stock stock);
 
-    void delete(String id);
+    void delete(Stock stock);
+
+    void enable(Stock stock);
 
     List<Stock> findAll();
 
-//    Stock findOneById(String id);
+    Stock findOneById(String id);
 
     long count();
 }

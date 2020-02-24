@@ -23,66 +23,6 @@ public class FoodCategoryController {
     @Autowired
     private FoodCategoryService foodCategoryService;
     /**
-     * 查询食物类别列表
-     */
-//    @GetMapping("/list")
-//    @CrossOrigin(origins = "*")
-//    public ResultVO findAll(
-//            @RequestParam(required = false) String stockId,
-////            @RequestParam(required = false) String typeNumber,
-//            @RequestParam Integer page,
-//            @RequestParam Integer size) {
-//        try {
-//            PageRequest pageRequest = PageRequest.of(page-1, size);
-////            Stock stock = new Stock();
-//            FoodCategory foodCategory = new FoodCategory();
-////            stock.setStockName(name);
-//            foodCategory.setStockId(stockId);
-////            if(typeNumber.equals("全部")){
-////                stock.setStockType("");
-////            }else{
-////                stock.setStockType(typeNumber);
-////            }
-//            Page<FoodCategory> foodCategoryList = foodCategoryService.findAll(foodCategory, pageRequest);
-//            return ResultVOUtil.success(foodCategoryList, "ok");
-//        } catch (Exception e) {
-//            return ResultVOUtil.error(1,"查询仓库错误");
-//        }
-//    }
-
-
-    /**
-     * 新增食物类别
-     */
-//    @PostMapping("/save")
-//    @CrossOrigin(origins = "*")
-//    public ResultVO save(@RequestBody FoodCategory foodCategory) {
-//        try {
-//            Integer count = (int)foodCategoryService.count();
-//            String foodCategoryId = CommonIdUtil.commonId(count);
-//            foodCategory.setStockId(foodCategoryId);
-//            foodCategoryService.save(foodCategory);
-//            return ResultVOUtil.success("ok");
-//        } catch (Exception e) {
-//            return ResultVOUtil.error(1, "新增食物类别失败");
-//        }
-//    }
-
-    /**
-     * 删除类别
-     */
-//    @PostMapping("/delete")
-//    @CrossOrigin(origins = "*")
-//    public ResultVO delete(@RequestBody Stock stock) {
-//        try {
-//            stockService.delete(stock.getStockId());
-//            return ResultVOUtil.success("ok");
-//        } catch (Exception e) {
-//            return ResultVOUtil.error(1, "删除仓库失败");
-//        }
-//    }
-
-    /**
      * 查询下拉列表
      */
     @GetMapping("/list/foodCategoryName")

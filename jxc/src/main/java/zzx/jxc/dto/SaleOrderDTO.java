@@ -1,34 +1,28 @@
-package zzx.jxc.sale.entity;
+package zzx.jxc.dto;
 
 import lombok.Data;
-import org.hibernate.annotations.DynamicUpdate;
-import zzx.jxc.enums.OrderStatusEnum;
+import zzx.jxc.sale.entity.SaleDetail;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
-@Entity
 @Data
-@DynamicUpdate
-public class SaleMaster {
-
-    @Id
+public class SaleOrderDTO {
     private String saleId;
     private String storeName;
     private String storePhone;
     private String storeAddress;
-    private Date submissionDate;
+    private Date submissionDate;   //交货期限
     private String submissionWay;
     private Integer storeId;   //供应门店id
     private String storeFzr;   //门店负责人
     private String stockName;
     private String reviewer;
     private String saleRemarks;
-    private Integer saleStatus = OrderStatusEnum.UNAUDITED.getCode();
+    private Integer saleStatus;
     private BigDecimal purchaseAmount;
     private Date createTime;
     private Date updateTime;
-
+    List<SaleDetail> saleDetailList;
 }

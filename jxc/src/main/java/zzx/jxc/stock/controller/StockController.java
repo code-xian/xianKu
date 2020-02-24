@@ -67,16 +67,34 @@ public class StockController {
     }
 
     /**
-     * 删除仓库
+     * 废弃仓库
      */
     @PostMapping("/delete")
     @CrossOrigin(origins = "*")
     public ResultVO delete(@RequestBody Stock stock) {
         try {
-            stockService.delete(stock.getStockId());
+            Stock oneById = stockService.findOneById(stock.getStockId());
+            oneById.setStockStatus(1);
+            stockService.delete(oneById);
             return ResultVOUtil.success("ok");
         } catch (Exception e) {
-            return ResultVOUtil.error(1, "删除仓库失败");
+            return ResultVOUtil.error(1, "废弃仓库失败");
+        }
+    }
+
+    /**
+     * 启用仓库
+     */
+    @PostMapping("/enable")
+    @CrossOrigin(origins = "*")
+    public ResultVO enable(@RequestBody Stock stock) {
+        try {
+            Stock oneById = stockService.findOneById(stock.getStockId());
+            oneById.setStockStatus(0);
+            stockService.enable(oneById);
+            return ResultVOUtil.success("ok");
+        } catch (Exception e) {
+            return ResultVOUtil.error(1, "启用仓库失败");
         }
     }
 
