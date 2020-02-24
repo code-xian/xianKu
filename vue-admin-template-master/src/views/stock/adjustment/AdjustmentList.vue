@@ -44,6 +44,11 @@
                 <el-table-column  prop="stockName" header-align="center" align="center" label="仓库名称"></el-table-column>
                 <el-table-column  prop="stockType" header-align="center" align="center" label="仓库类型"></el-table-column>
                 <el-table-column  prop="stockFzr" header-align="center" align="center" label="仓库负责人"></el-table-column>
+                <el-table-column  header-align="center" align="center" label="仓库状态">
+                    <template slot-scope="scope">
+                        <div>{{scope.row.stockStatus==0?"在用":scope.row.stockStatus==1?"废弃":""}}</div>
+                    </template>
+                </el-table-column>
                 <el-table-column
                         prop="stockNote"
                         show-overflow-tooltip
@@ -54,7 +59,8 @@
                 <el-table-column  fixed="right" header-align="center" align="center" width="300" label="操作">
                     <template slot-scope="scope">
                         <el-button size="mini" type="primary" plain @click="info(scope.row.stockId)">详述</el-button>
-                        <el-button size="mini" type="danger" plain @click="del(scope.row.id)">删除</el-button>
+                        <el-button size="mini" type="danger" plain @click="del(scope.row.stockId)" v-if="scope.row.stockStatus==0">废弃</el-button>
+                        <el-button size="mini" type="success" plain @click="enable(scope.row.stockId)" v-if="scope.row.stockStatus==1">启用</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -129,6 +135,13 @@
                     })
                 }).then(({ data }) => {
                     if (data && data.code === 0) {
+                        // for (let i = 0; i < data.data.content.length; i++) {
+                        //     data.data.content.push(
+                        //         {
+                        //             StockStatusMsg:data.data.content==0?"在用":data.data.content==1?"废弃":""
+                        //         }
+                        //     )
+                        // }
                         this.dataList = data.data.content;
                         this.totalPage = data.data.totalElements;
                     } else {
@@ -140,21 +153,59 @@
             },
             //删除
             del(id) {
-                this.$http({
-                    url: "/stock/delete",
-                    method: "post",
-                    data: this.$http.adornData({
-                        stockId:id
+                    this.$confirm(
+                        `确定是否进行废弃操作?`,
+                        "提示",
+                        {
+                            confirmButtonText: "确定",
+                            cancelButtonText: "取消",
+                            type: "warning"
+                        }
+                    ).then(()=>{
+                        this.$http({
+                            url: "/stock/delete",
+                            method: "post",
+                            data: this.$http.adornData({
+                                stockId:id
+                            })
+                        }).then(({ data }) => {
+                            if (data && data.code === 0) {
+                                this.$message.success("废弃成功")
+                            } else {
+                                this.$message.error(data.msg)
+                            }
+                            this.dataListLoading = false;
+                            this.getDataList();
+                        });
                     })
-                }).then(({ data }) => {
-                    if (data && data.code === 0) {
-                        this.$message.success("删除成功")
-                    } else {
-                        this.$message.error(data.msg)
+                },
+            //启用
+            enable(id) {
+                this.$confirm(
+                    `确定是否进行启用操作?`,
+                    "提示",
+                    {
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        type: "warning"
                     }
-                    this.dataListLoading = false;
-                    this.getDataList();
-                });
+                ).then(()=>{
+                    this.$http({
+                        url: "/stock/enable",
+                        method: "post",
+                        data: this.$http.adornData({
+                            stockId:id
+                        })
+                    }).then(({ data }) => {
+                        if (data && data.code === 0) {
+                            this.$message.success("启用成功")
+                        } else {
+                            this.$message.error(data.msg)
+                        }
+                        this.dataListLoading = false;
+                        this.getDataList();
+                    });
+                })
             },
             //新增
             add() {

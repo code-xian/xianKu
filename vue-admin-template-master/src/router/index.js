@@ -64,10 +64,10 @@ export const asyncRoutes = {
         name: 'outList',
         component: () => import('../views/sale/outOfStock/OutList.vue')
     },
-    'packagingList' : {
-        path: 'packagingList',
-        name: 'packagingList',
-        component: () => import('../views/stock/packaging/PackagingList.vue')
+    'foodList' : {
+        path: 'foodList',
+        name: 'foodList',
+        component: () => import('../views/stock/FoodList/FoodList.vue')
     },
     'transferList' : {
         path: 'transferList',

@@ -1,3 +1,4 @@
+//删除重复项
 export function deteleObject(obj) {
     var uniques = [];
     var stringify = {};

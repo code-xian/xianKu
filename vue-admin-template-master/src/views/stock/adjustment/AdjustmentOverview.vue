@@ -72,51 +72,57 @@
                                 prop="supplierName"
                                 header-align="center"
                                 align="center"
-                                label="供应商名称"
+                                label="食品货号"
                         >
                         </el-table-column>
                         <el-table-column
                                 prop="supplierPhone"
                                 header-align="center"
                                 align="center"
-                                label="供应商联系方式"
+                                label="食品名称"
                         >
                         </el-table-column>
                         <el-table-column
                                 prop="supplierFzr"
                                 header-align="center"
                                 align="center"
-                                label="供应商负责人"
+                                label="价格"
                         >
                         </el-table-column>
                         <el-table-column
                                 prop="supplierAddress"
                                 header-align="center"
                                 align="center"
-                                label="供应商地址"
+                                label="食品类目"
                         >
                         </el-table-column>
                         <el-table-column
                                 prop="supplierType"
                                 header-align="center"
                                 align="center"
-                                label="供应商类型"
+                                label="保质期"
                         >
                         </el-table-column>
                         <el-table-column
                                 prop="supplierNote"
                                 header-align="center"
                                 align="center"
-                                label="供应商简介">
+                                label="库存">
                         </el-table-column>
                         <el-table-column
+                                prop="supplierNote"
                                 header-align="center"
                                 align="center"
-                                label="操作">
-                            <template slot-scope="scope">
-                                <el-button type="text" size="small"  @click="del(scope.row.storeId)">删除</el-button>
-                            </template>
+                                label="食品备注">
                         </el-table-column>
+<!--                        <el-table-column-->
+<!--                                header-align="center"-->
+<!--                                align="center"-->
+<!--                                label="操作">-->
+<!--                            <template slot-scope="scope">-->
+<!--                                <el-button type="text" size="small"  @click="del(scope.row.storeId)">删除</el-button>-->
+<!--                            </template>-->
+<!--                        </el-table-column>-->
                     </el-table>
                     <el-pagination
                             class="page"
@@ -151,6 +157,7 @@
         methods: {
             init(id) {
                 console.log(id);
+                this.pageIndex = 1;
                 this.visible = true
                 this.getInfoData();
             },

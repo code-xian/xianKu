@@ -16,7 +16,7 @@
             </el-form-item>
             <el-form-item>
                 <el-button @click="getDataList()" type="warning">查询</el-button>
-                <el-button  type="primary" @click="addOrUpdateHandle()">新增</el-button>
+                <el-button  type="primary" @click="add()">新增</el-button>
             </el-form-item>
         </el-form>
         <div class="tableData">
@@ -29,61 +29,58 @@
                     v-loading="dataListLoading"
                     @selection-change="selectionChangeHandle"
                     style="width: 99%;">
-                <el-table-column width="65" header-align="center" align="center" label>
-                    <template slot-scope="scope">
-                        <el-radio
-                                class="radio"
-                                :label="scope.row.serialnumber"
-                                v-model="radio"
-                                @change.native="getTemplateRow(scope.$index,scope.row)"
-                        >&nbsp;</el-radio>
-                    </template>
-                </el-table-column>
+                <el-table-column
+                        type="index"
+                        width="50"
+                        header-align="center"
+                        align="center"
+                        label="No"
+                ></el-table-column>
                 <el-table-column
                         prop="sort"
                         header-align="center"
                         align="center"
-                        label="排序"
+                        label="订单编号"
                         width="105">
                 </el-table-column>
                 <el-table-column
                         prop="type"
                         header-align="center"
                         align="center"
-                        label="活动名称"
+                        label="门店名字"
                         width="145">
-                    <template slot-scope='scope'>
-                        <span v-if="scope.row.type == '1'">业务办理</span>
-                        <span v-else-if="scope.row.type == '2'">常用业务</span>
-                        <span v-else>其它业务</span>
-                    </template>
+<!--                    <template slot-scope='scope'>-->
+<!--                        <span v-if="scope.row.type == '1'">业务办理</span>-->
+<!--                        <span v-else-if="scope.row.type == '2'">常用业务</span>-->
+<!--                        <span v-else>其它业务</span>-->
+<!--                    </template>-->
                 </el-table-column>
                 <el-table-column
                         prop="name"
                         header-align="center"
                         align="center"
-                        label="负责人"
-                        width="145">
-                </el-table-column>
-                <el-table-column
-                        prop="name"
-                        header-align="center"
-                        align="center"
-                        label="所属部门"
+                        label="门店电话"
                         width="145">
                 </el-table-column>
                 <el-table-column
                         prop="name"
                         header-align="center"
                         align="center"
-                        label="活动地址"
+                        label="交货期限"
+                        width="145">
+                </el-table-column>
+                <el-table-column
+                        prop="name"
+                        header-align="center"
+                        align="center"
+                        label="门店地址"
                 >
                 </el-table-column>
                 <el-table-column
                         prop="name"
                         header-align="center"
                         align="center"
-                        label="活动类型"
+                        label="交货方式"
                         width="145">
                 </el-table-column>
 
@@ -97,34 +94,46 @@
                         prop="status"
                         header-align="center"
                         align="center"
-                        label="活动状态"
-                        width="145">
-                    <template slot-scope='scope'>
-                        <span v-if="scope.row.status == '1'">上线</span>
-                        <span v-else-if="scope.row.status == '2'">下线</span>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        prop="name"
-                        header-align="center"
-                        align="center"
-                        label="开始时间"
+                        label="审核人"
                         width="145">
                 </el-table-column>
                 <el-table-column
                         prop="name"
                         header-align="center"
                         align="center"
-                        label="结束时间"
+                        label="订单状态"
                         width="145">
                 </el-table-column>
                 <el-table-column
+                        prop="name"
+                        header-align="center"
+                        align="center"
+                        label="订单总金额"
+                        width="145">
+                </el-table-column>
+                <el-table-column
+                        prop="name"
+                        header-align="center"
+                        align="center"
+                        label="创建时间"
+                        width="145">
+                </el-table-column>
+                <el-table-column
+                        prop="name"
+                        header-align="center"
+                        align="center"
+                        label="备注"
+                        width="145">
+                </el-table-column>
+                <el-table-column
+                        fixed="right"
+                        width="100"
                         header-align="center"
                         align="center"
                         label="操作">
                     <template slot-scope="scope">
-                        <el-button type="text" size="small"  @click="audit(scope.row.id)">审核</el-button>
-                        <el-button type="text" size="small"  @click="audit(scope.row.id)">详情</el-button>
+                        <el-button type="text" size="small"  @click="audit(scope.row.id,true)" v-if="scope.row.id==0">审核</el-button>
+                        <el-button type="text" size="small"  @click="audit(scope.row.id,false)" v-if="scope.row.id==1">详情</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -144,17 +153,21 @@
         <!--    <minimenu-see v-if="seeDetailVisible" ref="minimenuSee"></minimenu-see>-->
 <!--        <development-audit  v-if="seeDetailVisible" ref="developmentAudit"></development-audit>-->
 <!--        <development-add v-if="addVisible" ref="developmentAdd"></development-add>-->
+        <sales-order-audit v-if="auditVisible" ref="audit" @refreshDataList="getDataList"></sales-order-audit>
+        <sales-order-add v-if="addVisible" ref="add" @refreshDataList="getDataList"></sales-order-add>
     </div>
 </template>
 
 <script>
+    import SalesOrderAudit from "./SalesOrderAudit";
+    import SalesOrderAdd from "./SalesOrderAdd";
     export default {
         name: "SalesOrder",
         data() {
             return{
-                dataForm: {
-                    type: ''
-                },
+                auditVisible:false,
+                addVisible:false,
+                dataForm: {},
                 dataList: [],
                 typeList : [
                     {label : '所有活动' , value : ''},
@@ -169,6 +182,46 @@
                 addVisible: false,
                 seeDetailVisible : false
             }
+        },
+        mounted() {
+            this.init();
+        },
+        methods:{
+            init() {
+                this.pageIndex = 1;
+                this.getDataList();
+            },
+            getDataList() {
+
+            },
+            audit(id,flag) {
+
+            },
+            add() {
+                this.addVisible=true;
+                this.$nextTick(()=>{
+                    this.$refs.add.init()
+                })
+            },
+            // 多选
+            selectionChangeHandle(val) {
+                this.dataListSelections = val;
+            },
+            // 每页数
+            sizeChangeHandle(val) {
+                this.pageSize = val;
+                this.pageIndex = 1;
+                this.getDataList();
+            },
+            // 当前页
+            currentChangeHandle(val) {
+                this.pageIndex = val;
+                this.getDataList();
+            },
+        },
+        components:{
+            SalesOrderAudit,
+            SalesOrderAdd
         }
     }
 </script>
