@@ -7,7 +7,7 @@ import java.util.Date;
 
 public class ddbhUtil {
 
-    public static String xsdd(Integer number) {
+    public static synchronized String xsdd(Integer number) {
     Date date=new Date();
     DateFormat format=new SimpleDateFormat("yyyyMMdd");
     String timeStr=format.format(date);

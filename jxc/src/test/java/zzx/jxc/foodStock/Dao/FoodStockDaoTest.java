@@ -18,7 +18,7 @@ class FoodStockDaoTest {
     public FoodStockDao foodStockDao;
     @Test
     void findByFoodIdAndStockId() {
-        Integer byFoodIdAndStockId = foodStockDao.findFoodStockByFoodIdAndStockId("001", "001");
+        Integer byFoodIdAndStockId = foodStockDao.findStockByFoodIdAndStockId("001", "001");
         System.out.println(byFoodIdAndStockId+"个");
     }
 

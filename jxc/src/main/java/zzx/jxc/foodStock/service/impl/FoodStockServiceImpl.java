@@ -8,10 +8,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zzx.jxc.VO.FoodStockVO;
+import zzx.jxc.dto.OrderCartDTO;
+import zzx.jxc.enums.ResultEnum;
+import zzx.jxc.exception.SellException;
 import zzx.jxc.foodCategory.dao.FoodCategoryDao;
 import zzx.jxc.foodCategory.entity.FoodCategory;
 import zzx.jxc.foodInfo.dao.FoodInfoDao;
 import zzx.jxc.foodInfo.entity.FoodInfo;
+import zzx.jxc.foodInfo.service.FoodInfoService;
 import zzx.jxc.foodStock.Dao.FoodStockDao;
 import zzx.jxc.foodStock.entity.FoodStock;
 import zzx.jxc.foodStock.service.FoodStockService;
@@ -30,6 +34,8 @@ public class FoodStockServiceImpl implements FoodStockService {
     private FoodInfoDao foodInfoDao;
     @Autowired
     private FoodCategoryDao foodCategoryDao;
+    @Autowired
+    private FoodInfoService foodInfoService;
 
     /**
      * 根据仓库Id,在FookStock表查食品ids,拿食品ids去查食品列表,
@@ -54,7 +60,7 @@ public class FoodStockServiceImpl implements FoodStockService {
             }
             FoodStockVO foodStockVO = new FoodStockVO();
             BeanUtils.copyProperties(foodInfo, foodStockVO);
-            Integer foodStock = foodStockDao.findFoodStockByFoodIdAndStockId(foodInfo.getFoodId(), stockId);
+            Integer foodStock = foodStockDao.findStockByFoodIdAndStockId(foodInfo.getFoodId(), stockId);
             foodStockVO.setStock(foodStock);
             FoodCategory foodCategoryByCategoryId = foodCategoryDao.findFoodCategoryByCategoryId(foodInfo.getCategoryId());
             foodStockVO.setCategoryName(foodCategoryByCategoryId.getCategoryName());
@@ -63,6 +69,41 @@ public class FoodStockServiceImpl implements FoodStockService {
         int size = foodStockVOS.size();
         Page<FoodStockVO> foodStockVOPage = new PageImpl<FoodStockVO>(foodStockVOS,pageable,size);
         return foodStockVOPage;
+    }
+
+    @Override
+    @Transactional
+    public void decreaseStock(List<OrderCartDTO> cartDTOList) {
+        for (OrderCartDTO orderCartDTO : cartDTOList) {
+            FoodInfo oneById = foodInfoService.findOneById(orderCartDTO.getFoodId());
+            if (oneById == null) {
+                throw new SellException(ResultEnum.FOOD_NOT_EXIST);
+            }
+            Integer foodStockNumber = foodStockDao.findStockByFoodIdAndStockId(orderCartDTO.getFoodId(), orderCartDTO.getStockId());
+            Integer result = foodStockNumber - orderCartDTO.getSaleQuantity();
+            if (result < 0) {
+                throw new SellException(ResultEnum.FOOD_STOCK_ERROR);
+            }
+            FoodStock foodStockByFoodIdAndStockId = foodStockDao.findFoodStockByFoodIdAndStockId(orderCartDTO.getFoodId(), orderCartDTO.getStockId());
+            foodStockByFoodIdAndStockId.setStock(result);
+            foodStockDao.save(foodStockByFoodIdAndStockId);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void increaseStock(List<OrderCartDTO> cartDTOList) {
+        for (OrderCartDTO orderCartDTO : cartDTOList) {
+            FoodInfo oneById = foodInfoService.findOneById(orderCartDTO.getFoodId());
+            if (oneById == null) {
+                throw new SellException(ResultEnum.FOOD_NOT_EXIST);
+            }
+            Integer foodStockNumber = foodStockDao.findStockByFoodIdAndStockId(orderCartDTO.getFoodId(), orderCartDTO.getStockId());
+            Integer result = foodStockNumber + orderCartDTO.getSaleQuantity();
+            FoodStock foodStockByFoodIdAndStockId = foodStockDao.findFoodStockByFoodIdAndStockId(orderCartDTO.getFoodId(), orderCartDTO.getStockId());
+            foodStockByFoodIdAndStockId.setStock(result);
+            foodStockDao.save(foodStockByFoodIdAndStockId);
+        }
     }
 
 }

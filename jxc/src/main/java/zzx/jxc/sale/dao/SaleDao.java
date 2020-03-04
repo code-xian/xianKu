@@ -7,4 +7,6 @@ public interface SaleDao extends JpaRepository<SaleMaster,String> {
     //两种都能查询类型
     Integer countBySaleIdLike(String number);
     Integer countSaleMastersBySaleIdLike(String number);
+
+    SaleMaster findSaleMasterBySaleId(String saleId);
 }

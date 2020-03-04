@@ -1,7 +1,7 @@
 package zzx.jxc.util;
 
 public class CommonIdUtil {
-    public static String commonId(Integer number) {
+    public static synchronized String commonId(Integer number) {
         String id = "";
         int count = number;   //需要通过当天时间去查 库存表中有多少条数据
         String strcount = ""; //这里是把查出来的int值转成string用于判断count的长度

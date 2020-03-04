@@ -32,7 +32,7 @@ class StoreServiceImplTest {
 
     @Test
     void findOneById() {
-        Store storeByStoreId = storeService.findOneById(001);
+        Store storeByStoreId = storeService.findOneById(15);
         System.out.println(storeByStoreId);
     }
 }

@@ -20,10 +20,10 @@ public interface SaleService {
     Page<SaleMaster> findList(SaleMaster saleMaster, Pageable pageable);
 
     //订单未通过审核
-    SaleOrderDTO cancel(SaleOrderDTO saleOrderDTO);
+    void cancel(SaleMaster saleMaster);
 
     //订单通过审核
-    SaleOrderDTO finish(SaleOrderDTO saleOrderDTO);
+    SaleOrderDTO finish(SaleOrderDTO saleOrderDTO,SaleMaster saleMaster);
 
     //查询食品列表
     Page<SaleFoodSelectListVO> findListAll(String stockName, Pageable pageable, String CategoryId, String foodName);

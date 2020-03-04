@@ -4,21 +4,35 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import zzx.jxc.VO.SaleFoodSelectListVO;
+import zzx.jxc.dto.OrderCartDTO;
 import zzx.jxc.dto.SaleOrderDTO;
+import zzx.jxc.enums.OrderStatusEnum;
+import zzx.jxc.enums.ResultEnum;
+import zzx.jxc.exception.SellException;
 import zzx.jxc.foodCategory.dao.FoodCategoryDao;
 import zzx.jxc.foodCategory.entity.FoodCategory;
 import zzx.jxc.foodInfo.dao.FoodInfoDao;
 import zzx.jxc.foodInfo.entity.FoodInfo;
+import zzx.jxc.foodInfo.service.FoodInfoService;
 import zzx.jxc.foodStock.Dao.FoodStockDao;
 import zzx.jxc.foodStock.entity.FoodStock;
+import zzx.jxc.foodStock.service.FoodStockService;
 import zzx.jxc.sale.dao.SaleDao;
+import zzx.jxc.sale.dao.SaleDetailDao;
 import zzx.jxc.sale.entity.SaleDetail;
 import zzx.jxc.sale.entity.SaleMaster;
 import zzx.jxc.sale.service.SaleService;
 import zzx.jxc.stock.dao.StockDao;
 import zzx.jxc.stock.entity.Stock;
+import zzx.jxc.stock.service.StockService;
+import zzx.jxc.store.entity.Store;
+import zzx.jxc.store.service.StoreService;
+import zzx.jxc.util.DetailKeyUtil;
+import zzx.jxc.util.ddbhUtil;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,6 +46,8 @@ public class SaleServiceImpl implements SaleService {
     @Autowired
     private SaleDao saleDao;
     @Autowired
+    private SaleDetailDao saleDetailDao;
+    @Autowired
     private FoodStockDao foodStockDao;
     @Autowired
     private FoodInfoDao foodInfoDao;
@@ -39,8 +55,17 @@ public class SaleServiceImpl implements SaleService {
     private FoodCategoryDao foodCategoryDao;
     @Autowired
     private StockDao stockDao;
+    @Autowired
+    private FoodInfoService foodInfoService;
+    @Autowired
+    private StoreService storeService;
+    @Autowired
+    private FoodStockService foodStockService;
+    @Autowired
+    private StockService stockService;
 
     @Override
+    @Transactional
     public Integer countBySaleIdLike() {
         Date date=new Date();
         DateFormat format=new SimpleDateFormat("yyyyMMdd");
@@ -51,16 +76,44 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     public SaleOrderDTO create(SaleOrderDTO saleOrderDTO) {
-        //1. 查询商品 ( 数量,价格)
-        for (SaleDetail saleDetail : saleOrderDTO.getSaleDetailList()) {
 
+        String xsdd = ddbhUtil.xsdd(countBySaleIdLike());
+        BigDecimal orderAmount = new BigDecimal(0);
+
+        //1. 查询商品 ( 数量,价格)
+        for (OrderCartDTO orderCartDTO : saleOrderDTO.getSaleDetailList()) {
+            FoodInfo oneById = foodInfoService.findOneById(orderCartDTO.getFoodId());
+            if (oneById == null) {
+                throw new SellException(ResultEnum.FOOD_NOT_EXIST);
+            }
+            //2.计算订单总价
+            orderAmount = oneById.getFoodPrice()
+                    .multiply(new BigDecimal(orderCartDTO.getSaleQuantity()))
+                    .add(orderAmount);
+            //订单详情入库
+            SaleDetail saleDetail = new SaleDetail();
+            BeanUtils.copyProperties(oneById,saleDetail);
+            saleDetail.setDetailRemarks(oneById.getFoodDescription());
+            saleDetail.setSaleId(xsdd);
+            saleDetail.setDetailId(DetailKeyUtil.genUniqueKey());
+            saleDetail.setStockId(orderCartDTO.getStockId());
+            saleDetail.setFoodQuantity(orderCartDTO.getSaleQuantity());
+            saleDetail.setStockName(stockService.findOneById(orderCartDTO.getStockId()).getStockName());
+            saleDetail.setDetailPrice(oneById.getFoodPrice() .multiply(new BigDecimal(orderCartDTO.getSaleQuantity())));
+            saleDetailDao.save(saleDetail);
         }
-        //2.计算总价
 
         //3.写入销售订单数据库( SaleMaster 和 SaleDetail)
+        SaleMaster saleMaster = new SaleMaster();
+        Store store = storeService.findOneById(saleOrderDTO.getStoreId());
+        BeanUtils.copyProperties(store,saleOrderDTO);
+        BeanUtils.copyProperties(saleOrderDTO,saleMaster);
+        saleMaster.setSaleId(xsdd);
+        saleMaster.setPurchaseAmount(orderAmount);
+        saleDao.save(saleMaster);
 
-        //4.扣库存
-        return null;
+        return saleOrderDTO;
+
     }
 
     @Override
@@ -70,16 +123,51 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     public Page<SaleMaster> findList(SaleMaster saleMaster, Pageable pageable) {
-        return null;
+        ExampleMatcher exampleMatcher = ExampleMatcher.matching()
+                .withMatcher("saleId",ExampleMatcher.GenericPropertyMatchers.contains())//contains是storeId 包含的数据
+                .withMatcher("storeName",ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("saleStatus",ExampleMatcher.GenericPropertyMatchers.contains());
+//                .withIgnorePaths("stockStatus");//isFace字段不参与匹配
+        //创建实例
+        Example<SaleMaster> example = Example.of(saleMaster,exampleMatcher);
+        Page<SaleMaster> saleMasterList = saleDao.findAll(example, pageable);
+        return saleMasterList;
     }
 
     @Override
-    public SaleOrderDTO cancel(SaleOrderDTO saleOrderDTO) {
-        return null;
+    public void cancel(SaleMaster saleMaster) {
+        //判断订单状态
+        SaleMaster saleMasterBySaleId = saleDao.findSaleMasterBySaleId(saleMaster.getSaleId());
+        if (!saleMasterBySaleId.getSaleStatus().equals(OrderStatusEnum.UNAUDITED.getCode())) {
+            throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+        }
+        //修改订单状态
+        saleMasterBySaleId.setSaleStatus(OrderStatusEnum.AUDIT_NO_PASS.getCode());
+        SaleMaster save = saleDao.save(saleMasterBySaleId); //返回更新之后的对象
+        if (save == null) {
+            throw new SellException(ResultEnum.ORDER_AUDIT_FAIL);
+        }
     }
 
     @Override
-    public SaleOrderDTO finish(SaleOrderDTO saleOrderDTO) {
+    public SaleOrderDTO finish(SaleOrderDTO saleOrderDTO,SaleMaster saleMaster) {
+        //判断订单状态
+        SaleMaster saleMasterBySaleId = saleDao.findSaleMasterBySaleId(saleMaster.getSaleId());
+        if (!saleMasterBySaleId.getSaleStatus().equals(OrderStatusEnum.UNAUDITED.getCode())) {
+            throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
+        }
+        //修改订单状态
+        saleMasterBySaleId.setSaleStatus(OrderStatusEnum.AUDIT_PASS.getCode());
+        SaleMaster save = saleDao.save(saleMasterBySaleId); //返回更新之后的对象
+        if (save == null) {
+            throw new SellException(ResultEnum.ORDER_AUDIT_FAIL);
+        }
+        //4.扣库存 在审核通过才扣库存
+        List<OrderCartDTO> collect = saleOrderDTO.getSaleDetailList().stream().map(e -> new OrderCartDTO(e.getFoodId(), e.getSaleQuantity(), e.getStockId())).collect(Collectors.toList());
+        foodStockService.decreaseStock(collect);
+
+        //创建发货单
+        //TODO
         return null;
     }
 
@@ -93,12 +181,12 @@ public class SaleServiceImpl implements SaleService {
                 .withIgnorePaths("stockStatus");//isFace字段不参与匹配
         //创建实例
         Example<Stock> example = Example.of(stock,exampleMatcher);
-        Page<Stock> stockList = stockDao.findAll(example, pageable);   //找到仓库id 来查所有食品
+        List<Stock> stockList = stockDao.findAll(example);   //找到仓库id 来查所有食品
         List<String> collectStockIDList = stockList.stream().map(Stock::getStockId).collect(Collectors.toList());
 //        List<FoodStock> allByStockIdIn = foodStockDao.findAllByStockIdIn(collectStockIDList); //所有的有库存的食品list
         List<SaleFoodSelectListVO> allSaleFoodSelectListVO = new ArrayList<>();
         for (String stockId:collectStockIDList) {
-            Page<FoodStock> allByStockPage = foodStockDao.findAllByStockId(stockId, pageable);
+            List<FoodStock> allByStockPage = foodStockDao.findAllByStockId(stockId);
             List<String> foodIds = allByStockPage.stream().map(FoodStock::getFoodId).collect(Collectors.toList());
             List<FoodInfo> allByFoodIdIn = foodInfoDao.findAllByFoodIdIn(foodIds);
             List<SaleFoodSelectListVO> saleFoodSelectListVOList = new ArrayList<>();
@@ -115,8 +203,9 @@ public class SaleServiceImpl implements SaleService {
                 }
                 SaleFoodSelectListVO saleFoodSelectListVO = new SaleFoodSelectListVO();
                 BeanUtils.copyProperties(foodInfo, saleFoodSelectListVO);
-                Integer foodStock = foodStockDao.findFoodStockByFoodIdAndStockId(foodInfo.getFoodId(), stockId);
+                Integer foodStock = foodStockDao.findStockByFoodIdAndStockId(foodInfo.getFoodId(), stockId);
                 saleFoodSelectListVO.setStock(foodStock);
+                saleFoodSelectListVO.setStockId(stockId);
                 saleFoodSelectListVO.setStockName(stockDao.findStockByStockId(stockId).getStockName());
                 FoodCategory foodCategoryByCategoryId = foodCategoryDao.findFoodCategoryByCategoryId(foodInfo.getCategoryId());
                 saleFoodSelectListVO.setCategoryName(foodCategoryByCategoryId.getCategoryName());
@@ -125,6 +214,7 @@ public class SaleServiceImpl implements SaleService {
             allSaleFoodSelectListVO.addAll(saleFoodSelectListVOList);
         }
         int size = allSaleFoodSelectListVO.size();
+
         Page<SaleFoodSelectListVO> allList = new PageImpl<SaleFoodSelectListVO>(allSaleFoodSelectListVO,pageable,size);
         return allList;
     }

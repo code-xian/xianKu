@@ -22,7 +22,9 @@ public class SaleDetail {
     private BigDecimal foodPrice;
     private Integer foodQuantity;
     private String detailRemarks;
-    private Integer stockQuantity;
+//    private Integer stockQuantity;
+    private String stockName;
+    private String stockId;
 //    private String foodUnit;
     private BigDecimal detailPrice;
     private Date createTime;

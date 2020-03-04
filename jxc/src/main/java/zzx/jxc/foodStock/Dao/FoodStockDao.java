@@ -17,11 +17,15 @@ public interface FoodStockDao extends JpaRepository<FoodStock,Integer> {
             "where\n" +
             " c.food_id=?1  and  s.stock_id =?2"
     )
-    Integer findFoodStockByFoodIdAndStockId(String foodId, String StockId);
+    Integer findStockByFoodIdAndStockId(String foodId, String StockId);
 
     Page<FoodStock> findAllByStockId(String stockId, Pageable pageable);
 
+    List<FoodStock> findAllByStockId(String stockId);
+
     List<FoodStock> findAllByStockIdIn(List<String> stockIdList);
+
+    FoodStock findFoodStockByFoodIdAndStockId(String foodId, String stockId);
 
 
 }

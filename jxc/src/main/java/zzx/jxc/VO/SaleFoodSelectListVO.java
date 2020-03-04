@@ -18,4 +18,5 @@ public class SaleFoodSelectListVO {
     private String categoryName;
     private BigDecimal totalAmount = new BigDecimal(0);
     private String stockName;   //仓库名字
+    private String stockId;  //仓库id
 }
