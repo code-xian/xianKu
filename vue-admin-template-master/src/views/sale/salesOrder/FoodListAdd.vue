@@ -37,6 +37,7 @@
                     :data="dataList"
                     border
                     max-height="90%"
+                    height="90%"
                     :header-cell-style="{background:'#f5f7fa'}"
                     v-loading="dataListLoading"
                     style="width: 99%;"
@@ -79,6 +80,13 @@
                 >
                 </el-table-column>
                 <el-table-column
+                        prop="stockName"
+                        header-align="center"
+                        align="center"
+                        label="仓库"
+                >
+                </el-table-column>
+                <el-table-column
                         prop="shelfLife"
                         header-align="center"
                         align="center"
@@ -96,6 +104,7 @@
                         prop="foodDescription"
                         header-align="center"
                         align="center"
+                        show-overflow-tooltip
                         label="食品描述"
                 >
                 </el-table-column>
