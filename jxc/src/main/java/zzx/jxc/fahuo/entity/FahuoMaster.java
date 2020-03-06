@@ -6,6 +6,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -15,15 +16,11 @@ public class FahuoMaster {
 
     @Id
     private String fahuoId;
-    private Date saleDate;
-    private String fahuoStock;
-    private Integer fahuoQuantity;
     private String storeName;
     private String storePhone;
     private String storeAddress;
     private String fahuoWay;
     private String fahuoRemarks;
-    private String fahuoAbstract;
     private Integer fahuoStaus;
     private String reviewer;  //审核人
     private Date fahuoDate;
@@ -31,4 +28,7 @@ public class FahuoMaster {
     private String fahuoType;
     private Date createTime;
     private Date updateTime;
+    private BigDecimal purchaseAmount;
+    private Date submissionDate;
+
 }
