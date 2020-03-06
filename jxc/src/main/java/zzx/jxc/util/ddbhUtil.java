@@ -7,7 +7,7 @@ import java.util.Date;
 
 public class ddbhUtil {
 
-    public static synchronized String xsdd(Integer number) {
+    public static synchronized String xsdd(Integer number,String pre) {
     Date date=new Date();
     DateFormat format=new SimpleDateFormat("yyyyMMdd");
     String timeStr=format.format(date);
@@ -60,7 +60,7 @@ public class ddbhUtil {
 //                strcount += strcc;
 //            }
 //        }
-        xsdd = "XSDD"+timeStr+strcount ;
+        xsdd = pre+timeStr+strcount ;
         return xsdd;
     }
 

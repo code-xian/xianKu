@@ -6,6 +6,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zzx.jxc.VO.SaleFoodSelectListVO;
+import zzx.jxc.VO.SaleOrderDetailVO;
 import zzx.jxc.dto.OrderCartDTO;
 import zzx.jxc.dto.SaleOrderDTO;
 import zzx.jxc.enums.OrderStatusEnum;
@@ -77,7 +78,7 @@ public class SaleServiceImpl implements SaleService {
     @Override
     public SaleOrderDTO create(SaleOrderDTO saleOrderDTO) {
 
-        String xsdd = ddbhUtil.xsdd(countBySaleIdLike());
+        String xsdd = ddbhUtil.xsdd(countBySaleIdLike(),"XSDD");
         BigDecimal orderAmount = new BigDecimal(0);
 
         //1. 查询商品 ( 数量,价格)
@@ -117,8 +118,19 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public SaleOrderDTO findOne(String saleId) {
-        return null;
+    public SaleOrderDetailVO findOne(String saleId) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SaleOrderDetailVO saleOrderDetailVO = new SaleOrderDetailVO();
+        SaleMaster saleMasterBySaleId = saleDao.findSaleMasterBySaleId(saleId);
+        Store store = storeService.findOneById(saleMasterBySaleId.getStoreId());
+        BeanUtils.copyProperties(store,saleOrderDetailVO);
+        saleOrderDetailVO.setSubmissionWay(saleMasterBySaleId.getSubmissionWay());
+        String dateString = formatter.format(saleMasterBySaleId.getSubmissionDate());
+        saleOrderDetailVO.setSubmissionDate(dateString);
+        saleOrderDetailVO.setSaleRemarks(saleMasterBySaleId.getSaleRemarks());
+        List<SaleDetail> allBySaleId = saleDetailDao.findAllBySaleId(saleId);
+        saleOrderDetailVO.setDetailList(allBySaleId);
+        return saleOrderDetailVO;
     }
 
     @Override
@@ -135,9 +147,9 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public void cancel(SaleMaster saleMaster) {
+    public void cancel(SaleOrderDTO saleOrderDTO) {
         //判断订单状态
-        SaleMaster saleMasterBySaleId = saleDao.findSaleMasterBySaleId(saleMaster.getSaleId());
+        SaleMaster saleMasterBySaleId = saleDao.findSaleMasterBySaleId(saleOrderDTO.getSaleId());
         if (!saleMasterBySaleId.getSaleStatus().equals(OrderStatusEnum.UNAUDITED.getCode())) {
             throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
         }
@@ -150,9 +162,10 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public SaleOrderDTO finish(SaleOrderDTO saleOrderDTO,SaleMaster saleMaster) {
+    @Transactional
+    public SaleOrderDTO finish(SaleOrderDTO saleOrderDTO) {
         //判断订单状态
-        SaleMaster saleMasterBySaleId = saleDao.findSaleMasterBySaleId(saleMaster.getSaleId());
+        SaleMaster saleMasterBySaleId = saleDao.findSaleMasterBySaleId(saleOrderDTO.getSaleId());
         if (!saleMasterBySaleId.getSaleStatus().equals(OrderStatusEnum.UNAUDITED.getCode())) {
             throw new SellException(ResultEnum.ORDER_STATUS_ERROR);
         }

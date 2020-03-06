@@ -7,8 +7,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import zzx.jxc.VO.ResultVO;
 import zzx.jxc.VO.SaleFoodSelectListVO;
+import zzx.jxc.VO.SaleOrderDetailVO;
+import zzx.jxc.dto.OrderCartDTO;
+import zzx.jxc.dto.SaleOrderDTO;
+import zzx.jxc.sale.entity.SaleMaster;
 import zzx.jxc.sale.service.SaleService;
 import zzx.jxc.util.ResultVOUtil;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/sale")
@@ -18,6 +26,7 @@ public class SaleController {
     private SaleService saleService;
 
 
+    //查询库存食品添加列表
     @GetMapping("/foodList")
     @CrossOrigin(origins = "*")
     public ResultVO findFoodList(@RequestParam(required = false) String stockName,
@@ -37,4 +46,79 @@ public class SaleController {
         }
 
     }
+
+    //新增供应订单
+    @PostMapping("/create")
+    @CrossOrigin(origins = "*")
+    public ResultVO createOrder(@RequestBody SaleOrderDTO saleOrderDTO) {
+        try {
+            saleService.create(saleOrderDTO);
+            return ResultVOUtil.success("创建供应订单成功");
+        } catch (Exception e) {
+            return ResultVOUtil.error(1, "创建供应订单失败");
+        }
+    }
+
+    //查询供应订单列表
+    @GetMapping("/list")
+    @CrossOrigin(origins = "*")
+    public ResultVO findList(@RequestParam(required = false) String saleId,
+                             @RequestParam(required = false) String storeName,
+                             @RequestParam(required = false) Integer orderStatus,
+                             @RequestParam Integer page,
+                             @RequestParam Integer size
+                             ){
+        try {
+            PageRequest pageRequest = PageRequest.of(page-1, size);
+            SaleMaster saleMaster = new SaleMaster();
+            saleMaster.setSaleId(saleId);
+            saleMaster.setStoreName(storeName);
+            if(orderStatus == null){
+                saleMaster.setSaleStatus(null);
+            }else{
+                saleMaster.setSaleStatus(orderStatus);
+            }
+            Page<SaleMaster> saleMasterList = saleService.findList(saleMaster, pageRequest);
+            return ResultVOUtil.success(saleMasterList, "ok");
+        } catch (Exception e) {
+            return ResultVOUtil.error(1,"查询供应订单列表错误");
+        }
+    }
+
+    //查询单个订单详情
+    @GetMapping("/detail")
+    @CrossOrigin(origins = "*")
+    public ResultVO findOne(@RequestParam String saleId) {
+        try {
+            SaleOrderDetailVO one = saleService.findOne(saleId);
+            return ResultVOUtil.success(one, "ok");
+        } catch (Exception e) {
+            return ResultVOUtil.error(1,"查询供应订单错误");
+        }
+    }
+
+    //审核订单
+    @PostMapping("/audit")
+    @CrossOrigin(origins = "*")
+    public ResultVO audit(@RequestBody Map<String,Object> params) {
+        try {
+            SaleOrderDTO saleOrderDTO = new SaleOrderDTO();
+            saleOrderDTO.setSaleId((String) params.get("saleId"));
+            saleOrderDTO.setSubmissionWay((String) params.get("submissionWay"));
+            saleOrderDTO.setSubmissionDate((Date) params.get("submissionDate"));
+            saleOrderDTO.setSaleRemarks((String) params.get("saleRemarks"));
+            saleOrderDTO.setReviewer((String) params.get("reviewer"));
+            saleOrderDTO.setSaleDetailList((List<OrderCartDTO>) params.get("list"));
+            if (params.get("orderStatus").equals(0)) {     //0 审核通过    1审核不通过
+                saleService.finish(saleOrderDTO);
+            }else if(params.get("orderStatus").equals(1)){
+                saleService.cancel(saleOrderDTO);
+            }
+            return ResultVOUtil.success("审核成功");
+        } catch (Exception e) {
+            return ResultVOUtil.error(1, "审核错误");
+        }
+    }
+
+
 }

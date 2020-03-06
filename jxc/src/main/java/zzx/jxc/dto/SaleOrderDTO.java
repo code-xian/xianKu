@@ -5,6 +5,9 @@ import lombok.Data;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 前端请求的对象
+ */
 @Data
 public class SaleOrderDTO {
     private String saleId;
