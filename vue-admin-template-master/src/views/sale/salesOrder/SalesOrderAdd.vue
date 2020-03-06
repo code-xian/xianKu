@@ -11,13 +11,18 @@
         <div class="box">
             <el-row style="margin-bottom: 10px;">
                 <el-col :span="24">
-                    <el-form>
+                    <el-form
+                        :model="dataForm"
+                         ref="dataForm"
+                        :rules="dataFormRules"
+                         @keyup.enter.native="dataFormSubmit()"
+                    >
                         <el-card class="box-card">
                             <table class="tabBox">
                                 <tr>
                                     <td class="label"><span style="color:red;">*</span>交货方式：</td>
                                     <td class="content">
-                                        <el-form-item>
+                                        <el-form-item prop="jiaoHuoFangShi">
                                             <el-select
                                                     v-model="dataForm.jiaoHuoFangShi"
                                                     value-key="value"
@@ -27,14 +32,14 @@
                                                         v-for="item in jiaoHuoList"
                                                         :key="item.value"
                                                         :label="item.label"
-                                                        :value="item.value"
+                                                        :value="item.label"
                                                 ></el-option>
                                             </el-select>
                                         </el-form-item>
                                     </td>
                                     <td class="label"><span style="color:red;">*</span>交货日期：</td>
                                     <td class="content">
-                                        <el-form-item>
+                                        <el-form-item prop="time">
                                             <el-date-picker
                                                     v-model="dataForm.time"
                                                     type="date"
@@ -45,7 +50,7 @@
                                     </td>
                                     <td class="label"><span style="color:red;">*</span>供应门店：</td>
                                     <td class="content">
-                                        <el-form-item>
+                                        <el-form-item prop="storeName">
                                             <el-input
 
                                                     v-model="dataForm.storeName"
@@ -59,7 +64,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="label"><span style="color:red;">*</span>订单备注：</td>
+                                    <td class="label">订单备注：</td>
                                     <td class="content" colspan="4">
                                         <el-form-item>
                                             <el-input
@@ -188,16 +193,17 @@
                         <!--                            </template>-->
                         <!--                        </el-table-column>-->
                     </el-table>
-                    <el-pagination
-                            class="page"
-                            @size-change="sizeChangeHandle"
-                            @current-change="currentChangeHandle"
-                            :current-page="pageIndex"
-                            :page-sizes="[10, 20, 50, 100]"
-                            :page-size="pageSize"
-                            :total="totalPage"
-                            layout="total, sizes, prev, pager, next, jumper">
-                    </el-pagination>
+<!--                    <el-pagination-->
+<!--                            class="page"-->
+<!--                            @size-change="sizeChangeHandle"-->
+<!--                            @current-change="currentChangeHandle"-->
+<!--                            :current-page="pageIndex"-->
+<!--                            :page-sizes="[10, 20, 50, 100]"-->
+<!--                            :page-size="pageSize"-->
+<!--                            :total="dataListSelections.length"-->
+<!--                            layout="total, sizes, prev, pager, next, jumper">-->
+<!--                    </el-pagination>-->
+                    <div style="float: right;font-size: 18px;margin: 5px 10px">共{{dataList.length}}条</div>
                 </div>
             </el-row>
         </div>
@@ -242,7 +248,12 @@
                     textarea:"",
                     storeName:""
                 },
-                dataListSelections: []
+                // dataListSelections: [],
+                dataFormRules:{
+                    jiaoHuoFangShi: [ { required: true, message: "交货方式不能为空" }],
+                    time: [ { required: true, message: "交货日期不能为空" }],
+                    storeName: [ { required: true, message: "门店不能为空" }],
+                }
             }
         },
         computed:{
@@ -261,10 +272,46 @@
         methods:{
             init() {
                 this.visible = true
+                this.dataFormSubmitDisabled = false;
+                this.dataList = [];
+                this.$nextTick(() => {
+                    this.$refs["dataForm"].resetFields();
+                });
             },
             // 表单提交
             dataFormSubmit(){
-                console.log(this.dataListSelections);
+                this.$refs['dataForm'].validate(valid => {
+                    if (valid) {
+                        this.dataFormSubmitDisabled = true;
+                        this.$http({
+                            url: "/sale/create",
+                            method: 'post',
+                            data: this.$http.adornData({
+                                submissionWay:this.dataForm.jiaoHuoFangShi,
+                                submissionDate: this.dataForm.time,
+                                storeId: this.dataForm.storeId,
+                                saleRemarks: this.dataForm.textarea,
+                                reviewer: this.$store.state.user.adminName,
+                                saleDetailList: this.dataList,
+                            })
+                        }).then(({data}) => {
+                            if (data && data.code === 0) {
+                                this.$message({
+                                    message: '操作成功',
+                                    type: 'success',
+                                    duration: 1500,
+                                    onClose: () => {
+                                        this.visible = false
+                                        this.$emit('refreshDataList')
+                                    }
+                                })
+                            } else {
+                                this.dataFormSubmitDisabled = false
+                                this.$message.error(data.msg)
+                            }
+                        })
+                    }
+                })
             },
             // 选择供应商弹窗
             selectSupplier(){
@@ -279,7 +326,7 @@
                 this.dataForm.storeName = obj.storeName;
                 this.dataForm.storeId = obj.storeId;
             },
-            //选择食品
+            //确定食品
             sureFood(list) {
                 this.foodListDialogVisible = false;
                 this.dataList = list
@@ -334,9 +381,9 @@
                 return sums
             },
             // 多选
-            selectionChangeHandle(val) {
-                this.dataListSelections = val;
-            },
+            // selectionChangeHandle(val) {
+            //     this.dataListSelections = val;
+            // },
             // 每页数
             sizeChangeHandle(val) {
                 this.pageSize = val;
@@ -368,6 +415,9 @@
         td {
             font-size: 20px;
             line-height: 40px;
+        }
+        tr{
+            height: 78px;
         }
         .label {
             text-align: center;

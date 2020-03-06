@@ -43,7 +43,7 @@ http.interceptors.response.use(response => {
  * @param {*} params 参数对象
  * @param {*} openDefultParams 是否开启默认参数?
  */
-http.adornParams = (params = {}, openDefultParams = true) => {
+http.adornParams = (params = {}, openDefultParams = false) => {
     let defaults = {
         't': new Date().getTime()
     }

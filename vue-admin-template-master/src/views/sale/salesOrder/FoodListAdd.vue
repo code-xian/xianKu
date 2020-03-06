@@ -1,7 +1,7 @@
 <template>
     <!-- 地址列表的查询组件 -->
     <el-dialog
-            title="门店选择"
+            title="食品选择"
             :close-on-click-modal="false"
             :modal="true"
             :modal-append-to-body="false"

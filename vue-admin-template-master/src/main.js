@@ -12,7 +12,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import VueCookie from 'vue-cookie' // api: https://github.com/alfhen/vue-cookie
 import QS from 'qs'
 import echarts from 'echarts'
-
+import moment from 'moment'
 
 // require('./mock/mock.js')
 Vue.config.productionTip = false
@@ -22,7 +22,7 @@ Vue.use(VueCookie)
 Vue.config.devtools = true
 
 
-
+Vue.prototype.$moment = moment
 Vue.prototype.$echarts = echarts
 Vue.prototype.$http = http
 Vue.prototype.qs = QS;

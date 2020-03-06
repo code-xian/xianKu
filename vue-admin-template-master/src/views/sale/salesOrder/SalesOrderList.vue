@@ -1,8 +1,8 @@
 <template>
     <div class="mod-config">
-        <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
-            <el-form-item label="类型" prop="type">
-                <el-select v-model="dataForm.type">
+        <el-form :inline="true" :model="dataForm" @keyup.enter.native="init()">
+            <el-form-item label="订单状态" prop="type">
+                <el-select v-model="dataForm.orderStatus">
                     <el-option
                             v-for="(item , index) in typeList"
                             :key="index"
@@ -11,11 +11,14 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="活动名称" >
-                <el-input  placeholder="请输入活动名称" clearable></el-input>
+            <el-form-item label="门店名称" >
+                <el-input  placeholder="请输入门店名称" clearable v-model="dataForm.storeName"></el-input>
+            </el-form-item>
+            <el-form-item label="供应单号" >
+                <el-input  placeholder="请输入供应单号" clearable v-model="dataForm.saleId"></el-input>
             </el-form-item>
             <el-form-item>
-                <el-button @click="getDataList()" type="warning">查询</el-button>
+                <el-button @click="init()" type="warning">查询</el-button>
                 <el-button  type="primary" @click="add()">新增</el-button>
             </el-form-item>
         </el-form>
@@ -37,14 +40,14 @@
                         label="No"
                 ></el-table-column>
                 <el-table-column
-                        prop="sort"
+                        prop="saleId"
                         header-align="center"
                         align="center"
                         label="订单编号"
                         width="105">
                 </el-table-column>
                 <el-table-column
-                        prop="type"
+                        prop="storeName"
                         header-align="center"
                         align="center"
                         label="门店名字"
@@ -56,28 +59,30 @@
 <!--                    </template>-->
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        prop="storePhone"
                         header-align="center"
                         align="center"
                         label="门店电话"
                         width="145">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        prop="submissionDate"
                         header-align="center"
                         align="center"
+                        :formatter="dateFormat2"
                         label="交货期限"
                         width="145">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        show-overflow-tooltip
+                        prop="storeAddress"
                         header-align="center"
                         align="center"
                         label="门店地址"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        prop="submissionWay"
                         header-align="center"
                         align="center"
                         label="交货方式"
@@ -91,35 +96,42 @@
                 <!--          label="活动状态">-->
                 <!--        </el-table-column>-->
                 <el-table-column
-                        prop="status"
+                        prop="reviewer"
                         header-align="center"
                         align="center"
                         label="审核人"
                         width="145">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
                         header-align="center"
                         align="center"
                         label="订单状态"
                         width="145">
+                    <template slot-scope="scope">
+                        <div slot="reference">
+                            {{ scope.row.saleStatus=="12"?"未审核":scope.row.saleStatus=="10"?"审核通过":scope.row.saleStatus=="11"?"审核未通过":"" }}
+                        </div>
+                    </template>
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        prop="purchaseAmount"
                         header-align="center"
                         align="center"
                         label="订单总金额"
                         width="145">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        show-overflow-tooltip
+                        prop="createTime"
                         header-align="center"
                         align="center"
                         label="创建时间"
+                        :formatter="dateFormat"
                         width="145">
                 </el-table-column>
                 <el-table-column
-                        prop="name"
+                        show-overflow-tooltip
+                        prop="saleRemarks"
                         header-align="center"
                         align="center"
                         label="备注"
@@ -132,8 +144,8 @@
                         align="center"
                         label="操作">
                     <template slot-scope="scope">
-                        <el-button type="text" size="small"  @click="audit(scope.row.id,true)" v-if="scope.row.id==0">审核</el-button>
-                        <el-button type="text" size="small"  @click="audit(scope.row.id,false)" v-if="scope.row.id==1">详情</el-button>
+                        <el-button type="primary" size="mini"  @click="audit(scope.row.saleId,true,scope.row.purchaseAmount)" v-if="scope.row.saleStatus==12">审核</el-button>
+                        <el-button type="primary" size="mini"  @click="audit(scope.row.saleId,false,scope.row.purchaseAmount)" v-if="scope.row.saleStatus==10||scope.row.saleStatus==11">详情</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -153,8 +165,8 @@
         <!--    <minimenu-see v-if="seeDetailVisible" ref="minimenuSee"></minimenu-see>-->
 <!--        <development-audit  v-if="seeDetailVisible" ref="developmentAudit"></development-audit>-->
 <!--        <development-add v-if="addVisible" ref="developmentAdd"></development-add>-->
-        <sales-order-audit v-if="auditVisible" ref="audit" @refreshDataList="getDataList"></sales-order-audit>
-        <sales-order-add v-if="addVisible" ref="add" @refreshDataList="getDataList"></sales-order-add>
+        <sales-order-audit v-if="auditVisible" ref="audit" @refreshDataList="init"></sales-order-audit>
+        <sales-order-add v-if="addVisible" ref="add" @refreshDataList="init"></sales-order-add>
     </div>
 </template>
 
@@ -167,12 +179,17 @@
             return{
                 auditVisible:false,
                 addVisible:false,
-                dataForm: {},
+                dataForm: {
+                    saleId:"",
+                    storeName:"",
+                    orderStatus:"",
+                },
                 dataList: [],
                 typeList : [
-                    {label : '所有活动' , value : ''},
-                    {label : '我参与的' , value : '1'},
-                    {label : '我负责的' , value : '2'},
+                    {label : '全部' , value : ''},
+                    {label : '未审核' , value : '12'},
+                    {label : '审核通过' , value : '10'},
+                    {label : '审核不通过' , value : '11'},
                 ],
                 pageIndex: 1,
                 pageSize: 20,
@@ -192,10 +209,33 @@
                 this.getDataList();
             },
             getDataList() {
-
+                this.dataListLoading = true;
+                this.$http({
+                    url: "/sale/list",
+                    method: "get",
+                    params: this.$http.adornParams({
+                        saleId:this.dataForm.saleId,
+                        storeName:this.dataForm.storeName,
+                        orderStatus:this.dataForm.orderStatus,
+                        page: this.pageIndex,
+                        size: this.pageSize,
+                    })
+                }).then(({ data }) => {
+                    if (data && data.code === 0) {
+                        this.dataList=data.data.content;
+                        this.totalPage=data.data.totalElements;
+                    } else {
+                        this.dataList = [];
+                        this.totalPage = 0;
+                    }
+                    this.dataListLoading = false;
+                });
             },
-            audit(id,flag) {
-
+            audit(id,flag,purchaseAmount) {
+                this.auditVisible=true;
+                this.$nextTick(()=>{
+                    this.$refs.audit.init(id,flag,purchaseAmount)
+                })
             },
             add() {
                 this.addVisible=true;
@@ -206,6 +246,16 @@
             // 多选
             selectionChangeHandle(val) {
                 this.dataListSelections = val;
+            },
+            dateFormat(row, column, cellValue, index) {
+                const date = row.createTime
+                if(date == null){return ''};
+                return this.$moment(date).format("YYYY-MM-DD HH:mm:ss")
+            },
+            dateFormat2(row, column, cellValue, index) {
+                const date = row.submissionDate
+                if(date == null){return ''};
+                return this.$moment(date).format("YYYY-MM-DD")
             },
             // 每页数
             sizeChangeHandle(val) {
