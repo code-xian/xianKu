@@ -23,7 +23,6 @@ public class SaleMaster {
     private String submissionWay;
     private Integer storeId;   //供应门店id
     private String storeFzr;   //门店负责人
-    private String stockName;
     private String reviewer;
     private String saleRemarks;
     private Integer saleStatus = OrderStatusEnum.UNAUDITED.getCode();

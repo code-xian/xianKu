@@ -6,7 +6,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zzx.jxc.VO.SaleFoodSelectListVO;
-import zzx.jxc.VO.SaleOrderDetailVO;
+import zzx.jxc.VO.SaleOrderInfoVO;
 import zzx.jxc.dto.OrderCartDTO;
 import zzx.jxc.dto.SaleOrderDTO;
 import zzx.jxc.enums.OrderStatusEnum;
@@ -118,19 +118,19 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public SaleOrderDetailVO findOne(String saleId) {
+    public SaleOrderInfoVO findOne(String saleId) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        SaleOrderDetailVO saleOrderDetailVO = new SaleOrderDetailVO();
+        SaleOrderInfoVO saleOrderInfoVO = new SaleOrderInfoVO();
         SaleMaster saleMasterBySaleId = saleDao.findSaleMasterBySaleId(saleId);
         Store store = storeService.findOneById(saleMasterBySaleId.getStoreId());
-        BeanUtils.copyProperties(store,saleOrderDetailVO);
-        saleOrderDetailVO.setSubmissionWay(saleMasterBySaleId.getSubmissionWay());
+        BeanUtils.copyProperties(store, saleOrderInfoVO);
+        saleOrderInfoVO.setSubmissionWay(saleMasterBySaleId.getSubmissionWay());
         String dateString = formatter.format(saleMasterBySaleId.getSubmissionDate());
-        saleOrderDetailVO.setSubmissionDate(dateString);
-        saleOrderDetailVO.setSaleRemarks(saleMasterBySaleId.getSaleRemarks());
+        saleOrderInfoVO.setSubmissionDate(dateString);
+        saleOrderInfoVO.setSaleRemarks(saleMasterBySaleId.getSaleRemarks());
         List<SaleDetail> allBySaleId = saleDetailDao.findAllBySaleId(saleId);
-        saleOrderDetailVO.setDetailList(allBySaleId);
-        return saleOrderDetailVO;
+        saleOrderInfoVO.setDetailList(allBySaleId);
+        return saleOrderInfoVO;
     }
 
     @Override

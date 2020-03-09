@@ -7,7 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import zzx.jxc.VO.ResultVO;
 import zzx.jxc.VO.SaleFoodSelectListVO;
-import zzx.jxc.VO.SaleOrderDetailVO;
+import zzx.jxc.VO.SaleOrderInfoVO;
 import zzx.jxc.dto.OrderCartDTO;
 import zzx.jxc.dto.SaleOrderDTO;
 import zzx.jxc.sale.entity.SaleMaster;
@@ -90,7 +90,7 @@ public class SaleController {
     @CrossOrigin(origins = "*")
     public ResultVO findOne(@RequestParam String saleId) {
         try {
-            SaleOrderDetailVO one = saleService.findOne(saleId);
+            SaleOrderInfoVO one = saleService.findOne(saleId);
             return ResultVOUtil.success(one, "ok");
         } catch (Exception e) {
             return ResultVOUtil.error(1,"查询供应订单错误");

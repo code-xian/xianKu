@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import zzx.jxc.VO.SaleFoodSelectListVO;
-import zzx.jxc.VO.SaleOrderDetailVO;
+import zzx.jxc.VO.SaleOrderInfoVO;
 import zzx.jxc.dto.OrderCartDTO;
 import zzx.jxc.dto.SaleOrderDTO;
 import zzx.jxc.sale.entity.SaleMaster;
@@ -58,7 +58,7 @@ class SaleServiceImplTest {
 
     @Test
     void findOne() {
-        SaleOrderDetailVO one = saleService.findOne("XSDD20200303001");
+        SaleOrderInfoVO one = saleService.findOne("XSDD20200303001");
         System.out.println(one);
     }
 

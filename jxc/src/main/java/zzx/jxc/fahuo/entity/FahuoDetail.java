@@ -18,6 +18,7 @@ public class FahuoDetail {
     private String detailRemarks;
     private String foodName;
     private String stockName;
+    private String stockId;
     private BigDecimal foodPrice;
     private BigDecimal detailPrice;
 

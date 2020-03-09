@@ -6,7 +6,7 @@ import zzx.jxc.sale.entity.SaleDetail;
 import java.util.List;
 
 @Data
-public class SaleOrderDetailVO {
+public class SaleOrderInfoVO {
     private String storeName;
     private String storePhone;
     private String storeAddress;
