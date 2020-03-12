@@ -158,7 +158,7 @@
                                 width="300"
                                 label="数量">
                             <template slot-scope="scope">
-                                <el-input-number v-model="scope.row.saleQuantity" type="number"></el-input-number>
+                                <el-input-number v-model="scope.row.saleQuantity" type="number" controls-position="right" :min="1"></el-input-number>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -273,6 +273,7 @@
             init() {
                 this.visible = true
                 this.dataFormSubmitDisabled = false;
+                this.dataForm.textarea = "";
                 this.dataList = [];
                 this.$nextTick(() => {
                     this.$refs["dataForm"].resetFields();
@@ -381,9 +382,9 @@
                 return sums
             },
             // 多选
-            // selectionChangeHandle(val) {
-            //     this.dataListSelections = val;
-            // },
+            selectionChangeHandle(val) {
+                this.dataListSelections = val;
+            },
             // 每页数
             sizeChangeHandle(val) {
                 this.pageSize = val;

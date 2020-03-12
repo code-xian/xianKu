@@ -6,7 +6,7 @@
             width = "75%"
             style="margin-bottom: 5vh"
             top="7vh"
-            title="新增"
+            :title="flag?'审核':'详情'"
     >
         <div class="box">
             <el-row style="margin-bottom: 10px;">
@@ -215,7 +215,10 @@
                     data: this.$http.adornData({
                         saleId:this.saleId,
                         orderStatus:flag,
-                        list:this.dataList,
+                        list:this.dataList.map(n=>{
+                            Object.assign(n,{saleQuantity:n.foodQuantity})
+                            return n
+                        })
                     })
                 }).then(({ data }) => {
                     if (data && data.code === 0) {

@@ -2,6 +2,8 @@ package zzx.jxc.chuku.entity;
 
 
 import lombok.Data;
+import org.hibernate.annotations.DynamicUpdate;
+import zzx.jxc.enums.OrderStatusEnum;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -10,6 +12,7 @@ import java.util.Date;
 
 @Entity
 @Data
+@DynamicUpdate
 public class ChukuMaster {
     @Id
     private String chukuId;
@@ -17,14 +20,14 @@ public class ChukuMaster {
     private String storeName;
     private String storePhone;
     private String storeAddress;
-    private String chukuAbstract;
+    private String storeFzr;
     private BigDecimal chukuMoney;
     private String chukuRemarks;
-    private Integer chukuStatus;
-    private Integer totalQuantity;
+    private Integer chukuStatus = OrderStatusEnum.UNAUDITED.getCode();;
     private Date chukuDate;
-    private String stockName;
     private String sourceOrder;
     private Date createTime;
     private Date updateTime;
+    private String fahuoWay;
+    private String reviewer;
 }

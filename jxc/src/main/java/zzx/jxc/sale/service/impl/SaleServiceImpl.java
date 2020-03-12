@@ -12,6 +12,7 @@ import zzx.jxc.dto.SaleOrderDTO;
 import zzx.jxc.enums.OrderStatusEnum;
 import zzx.jxc.enums.ResultEnum;
 import zzx.jxc.exception.SellException;
+import zzx.jxc.fahuo.service.FahuoService;
 import zzx.jxc.foodCategory.dao.FoodCategoryDao;
 import zzx.jxc.foodCategory.entity.FoodCategory;
 import zzx.jxc.foodInfo.dao.FoodInfoDao;
@@ -64,9 +65,10 @@ public class SaleServiceImpl implements SaleService {
     private FoodStockService foodStockService;
     @Autowired
     private StockService stockService;
+    @Autowired
+    private FahuoService fahuoService;
 
     @Override
-    @Transactional
     public Integer countBySaleIdLike() {
         Date date=new Date();
         DateFormat format=new SimpleDateFormat("yyyyMMdd");
@@ -112,7 +114,6 @@ public class SaleServiceImpl implements SaleService {
         saleMaster.setSaleId(xsdd);
         saleMaster.setPurchaseAmount(orderAmount);
         saleDao.save(saleMaster);
-
         return saleOrderDTO;
 
     }
@@ -163,7 +164,7 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     @Transactional
-    public SaleOrderDTO finish(SaleOrderDTO saleOrderDTO) {
+    public SaleOrderDTO finish(SaleOrderDTO saleOrderDTO) throws RuntimeException{
         //判断订单状态
         SaleMaster saleMasterBySaleId = saleDao.findSaleMasterBySaleId(saleOrderDTO.getSaleId());
         if (!saleMasterBySaleId.getSaleStatus().equals(OrderStatusEnum.UNAUDITED.getCode())) {
@@ -178,9 +179,7 @@ public class SaleServiceImpl implements SaleService {
         //4.扣库存 在审核通过才扣库存
         List<OrderCartDTO> collect = saleOrderDTO.getSaleDetailList().stream().map(e -> new OrderCartDTO(e.getFoodId(), e.getSaleQuantity(), e.getStockId())).collect(Collectors.toList());
         foodStockService.decreaseStock(collect);
-
-        //创建发货单
-        //TODO
+        fahuoService.create(saleMasterBySaleId);
         return null;
     }
 
@@ -199,6 +198,9 @@ public class SaleServiceImpl implements SaleService {
 //        List<FoodStock> allByStockIdIn = foodStockDao.findAllByStockIdIn(collectStockIDList); //所有的有库存的食品list
         List<SaleFoodSelectListVO> allSaleFoodSelectListVO = new ArrayList<>();
         for (String stockId:collectStockIDList) {
+            if (stockDao.findStockByStockId(stockId).getStockStatus()!=0) {  //判断出库是否为废弃仓库
+                continue;
+            }
             List<FoodStock> allByStockPage = foodStockDao.findAllByStockId(stockId);
             List<String> foodIds = allByStockPage.stream().map(FoodStock::getFoodId).collect(Collectors.toList());
             List<FoodInfo> allByFoodIdIn = foodInfoDao.findAllByFoodIdIn(foodIds);

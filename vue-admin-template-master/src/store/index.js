@@ -15,28 +15,28 @@ const store = new Vuex.Store({
                 text: '主页' // 文本内容
             },
             {
-                text: '销售管理',
+                text: '供应管理',
                 type: 'ios-paper',
                 children: [
                     {
                         type: 'ios-grid',
                         name: 'salesOrderList',
-                        text: '销售订单列表'
+                        text: '供应订单列表'
                     },
                     {
                         type: 'ios-grid',
                         name: 'outList',
-                        text: '销售出库单列表'
+                        text: '供应出库单列表'
                     },
                     {
                         type: 'ios-grid',
                         name: 'returnedSale',
-                        text: '销售退货单列表'
+                        text: '供应退货单列表'
                     },
                     {
                         type: 'ios-grid',
                         name: 'exchangedSale',
-                        text: '销售换货单列表'
+                        text: '供应换货单列表'
                     },
                 ]
             },

@@ -1,4 +1,4 @@
-package zzx.jxc.fahuo.service.impl;
+package zzx.jxc.chuku.service.impl;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,44 +7,43 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import zzx.jxc.VO.FahuoOrderInfoVO;
+import zzx.jxc.VO.ChukuOrderInfoVO;
+import zzx.jxc.chuku.entity.ChukuMaster;
+import zzx.jxc.chuku.service.ChukuService;
 import zzx.jxc.fahuo.entity.FahuoMaster;
-import zzx.jxc.sale.entity.SaleMaster;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
-class FahuoServiceImplTest {
-
-
+class ChukuServiceImplTest {
 
     @Autowired
-    private FahuoServiceImpl fahuoService;
-
+    private ChukuService chukuService;
     @Test
-    void countByFahuoIdLike() {
+    void countByChukuIdLike() {
+
     }
 
     @Test
     void create() {
-        SaleMaster saleMaster = new SaleMaster();
-        saleMaster.setSaleId("XSDD20200310004");
-        fahuoService.create(saleMaster);
+        FahuoMaster fahuoMaster = new FahuoMaster();
+        fahuoMaster.setFahuoId("FHD20200310001");
+        chukuService.create(fahuoMaster);
     }
 
     @Test
     void findOne() {
-        FahuoOrderInfoVO fhd20200309001 = fahuoService.findOne("FHD20200309001");
-        System.out.println(fhd20200309001);
+        ChukuOrderInfoVO fhd20200310001 = chukuService.findOne("CKD20200310001");
     }
 
     @Test
     void findList() {
-        FahuoMaster fahuoMaster = new FahuoMaster();
-        Page<FahuoMaster> list = fahuoService.findList(fahuoMaster, PageRequest.of(0, 10));
+        ChukuMaster chukuMaster = new ChukuMaster();
+        Page<ChukuMaster> list = chukuService.findList(chukuMaster, PageRequest.of(0, 10));
     }
 
     @Test
     void cancel() {
+        chukuService.cancel("CKD20200310001");
     }
 
     @Test

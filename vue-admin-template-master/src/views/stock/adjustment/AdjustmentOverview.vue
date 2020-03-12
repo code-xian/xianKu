@@ -8,14 +8,14 @@
             top="7vh"
     >
         <div class="box">
-            <el-row style="margin-bottom: 10px;">
+            <el-row style="margin-bottom: 10px;" v-loading="dataListLoading">
                 <el-col :span="5">
                     <el-card class="box-card">
                         <div style="margin:7px auto;display: inline-block;">
                             <p
                                     style="margin:0;font-size:27px;color:#a9d86e;font-weight:bolder;"
-                            >仓库一</p>
-                            <p style="margin:0;font-size:20px;">冷冻类</p>
+                            >{{data.stockName}}</p>
+                            <p style="margin:0;font-size:20px;">{{data.stockType}}</p>
                         </div>
                     </el-card>
                 </el-col>
@@ -24,15 +24,13 @@
                         <table class="tabBox">
                             <tr>
                                 <td class="label">负责人：</td>
-                                <td class="content">{{123}}</td>
-                                <td class="label">证件号：</td>
-                                <td class="content">{{123}}</td>
-                                <td class="label">客户编号：</td>
-                                <td class="content">{{123}}</td>
+                                <td class="content">{{data.stockFzr}}</td>
+                                <td class="label">仓库状态：</td>
+                                <td class="content">{{data.stockStatus==0?"再用":"废弃"}}</td>
                             </tr>
                             <tr>
                                 <td class="label">备注：</td>
-                                <td class="content" colspan="4">{{123}}</td>
+                                <td class="content" colspan="4">{{data.stockNote}}</td>
                             </tr>
                         </table>
                     </el-card>
@@ -43,7 +41,7 @@
                 <div class="title">
                     <i class="el-icon-share icon" style="color:coral;"></i>仓库详情
                     <el-button style="float: right;margin:5px 10px" type="primary" round size="small" @click="move()">移库</el-button>
-                    <el-select v-model="value" placeholder="请选择" @change="selectGetData()" style="float: right;margin-right:5px">
+                    <el-select v-model="category" placeholder="请选择食品类目" @change="selectGetData()" style="float: right;margin-right:5px">
                         <el-option
                                 v-for="item in categoryList"
                                 :key="item.value"
@@ -59,8 +57,10 @@
                             :data="dataList"
                             border
                             :header-cell-style="{background:'#f5f7fa'}"
-                            v-loading="dataListLoading"
+                            v-loading="stockDetailLoading"
+                            @selection-change="selectionChangeHandle"
                             style="width: 99%;">
+                        <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
                         <el-table-column
                                 type="index"
                                 width="50"
@@ -69,48 +69,48 @@
                                 label="No"
                         ></el-table-column>
                         <el-table-column
-                                prop="supplierName"
+                                prop="foodId"
                                 header-align="center"
                                 align="center"
                                 label="食品货号"
                         >
                         </el-table-column>
                         <el-table-column
-                                prop="supplierPhone"
+                                prop="foodName"
                                 header-align="center"
                                 align="center"
                                 label="食品名称"
                         >
                         </el-table-column>
                         <el-table-column
-                                prop="supplierFzr"
+                                prop="foodPrice"
                                 header-align="center"
                                 align="center"
                                 label="价格"
                         >
                         </el-table-column>
                         <el-table-column
-                                prop="supplierAddress"
+                                prop="categoryName"
                                 header-align="center"
                                 align="center"
                                 label="食品类目"
                         >
                         </el-table-column>
                         <el-table-column
-                                prop="supplierType"
+                                prop="shelfLife"
                                 header-align="center"
                                 align="center"
                                 label="保质期"
                         >
                         </el-table-column>
                         <el-table-column
-                                prop="supplierNote"
+                                prop="stock"
                                 header-align="center"
                                 align="center"
                                 label="库存">
                         </el-table-column>
                         <el-table-column
-                                prop="supplierNote"
+                                prop="foodDescription"
                                 header-align="center"
                                 align="center"
                                 label="食品备注">
@@ -147,28 +147,86 @@
             return {
                 dataList:[],
                 dataListLoading:false,
+                stockDetailLoading:false,
                 visible:false,
                 pageIndex: 1,
                 pageSize: 20,
                 totalPage: 0,
-                categoryList:[]
+                categoryList:[],
+                category:"",
+                stockId:"",
+                data: {}
             };
         },
         methods: {
             init(id) {
-                console.log(id);
-                this.pageIndex = 1;
                 this.visible = true
+                this.stockId = id
+                this.pageIndex = 1;
                 this.getInfoData();
+                this.getStatusList();
+                this.selectGetData();
             },
             getInfoData() {
-
+                this.dataListLoading = true;
+                this.$nextTick(() => {
+                    this.$http({
+                        url: "/stock/detail",
+                        method: "get",
+                        params: this.$http.adornParams({
+                            stockId:this.stockId,
+                        })
+                    }).then(({ data }) => {
+                        if (data && data.code === 0) {
+                            this.data = data.data
+                        } else {
+                            this.$message.error(data.msg);
+                        }
+                    });
+                });
+                this.dataListLoading = false;
             },
             selectGetData() {
-
+                this.stockDetailLoading = true;
+                this.$nextTick(() => {
+                    this.$http({
+                        url: "/foodStock/list",
+                        method: "get",
+                        params: this.$http.adornParams({
+                            stockId:this.stockId,
+                            categoryId : this.category,
+                            page:this.pageIndex,
+                            size:this.pageSize,
+                        })
+                    }).then(({ data }) => {
+                        if (data && data.code === 0) {
+                            this.dataList = data.data.content
+                        } else {
+                            this.$message.error(data.msg);
+                        }
+                    });
+                });
+                this.stockDetailLoading = false;
             },
             move() {
 
+            },
+            // 查询食品类目下拉列表
+            getStatusList() {
+                this.$http({
+                    url: "/foodCategory/list/foodCategoryName",
+                    method: "get",
+                    params: this.$http.adornParams()
+                }).then(({ data }) => {
+                    if (data && data.code === 0) {
+                        this.categoryList = data.data
+                        this.categoryList.unshift({
+                            label: "全部", value: ""
+                        })
+                    } else {
+                        this.categoryList = [{ label: "全部", value: "" }];
+                    }
+                });
             },
             // 每页数
             sizeChangeHandle(val) {
@@ -180,6 +238,9 @@
             currentChangeHandle(val) {
                 this.pageIndex = val;
                 this.getDataList();
+            },
+            selectionChangeHandle(val) {
+                this.dataListSelections = val;
             },
         }
     }

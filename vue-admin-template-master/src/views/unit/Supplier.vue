@@ -118,7 +118,7 @@
                         align="center"
                         label="操作">
                     <template slot-scope="scope">
-                        <el-button type="danger" size="small"  @click="del(scope.row.storeId)">删除</el-button>
+                        <el-button type="danger" plain size="small"  @click="del(scope.row.storeId)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>

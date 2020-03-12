@@ -1,16 +1,6 @@
 <template>
     <div class="mod-config">
         <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
-            <!--            <el-form-item label="门店类型" prop="type">-->
-            <!--                <el-select v-model="dataForm.type">-->
-            <!--                    <el-option-->
-            <!--                            v-for="(item , index) in typeList"-->
-            <!--                            :key="index"-->
-            <!--                            :label="item.label"-->
-            <!--                            :value="item.value">-->
-            <!--                    </el-option>-->
-            <!--                </el-select>-->
-            <!--            </el-form-item>-->
             <el-form-item label="食品名称">
                 <el-input  placeholder="请输入食品名称" clearable v-model="dataForm.foodName"></el-input>
             </el-form-item>
@@ -65,10 +55,11 @@
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="supplierPhone"
+                        prop="categoryId"
                         header-align="center"
                         align="center"
                         label="食品类目"
+                        :formatter="categoryLabel"
                 >
                 </el-table-column>
                 <el-table-column
@@ -154,11 +145,13 @@
             </el-pagination>
         </div>
 <!--        <supplier-add v-if="addVisible" ref="supplierAdd" @refreshDataList="getDataList"></supplier-add>-->
+        <food-add v-if="addVisible" ref="add" @refreshDataList="getDataList"></food-add>
     </div>
 </template>
 
 <script>
     // import SupplierAdd from "./SupplierAdd";
+    import FoodAdd from "./FoodAdd";
     export default {
         name: "FoodList",
         data() {
@@ -179,7 +172,7 @@
             }
         },
         components:{
-            // SupplierAdd
+            FoodAdd
         },
         mounted() {
             this.getDataList();
@@ -188,6 +181,7 @@
         methods:{
             // 获取数据列表
             getDataList() {
+                this.pageIndex=1;
                 this.dataListLoading = true;
                 this.$http({
                     url: "/foodInfo/list",
@@ -213,7 +207,7 @@
             SupplierAddButton() {
                 this.addVisible=true
                 this.$nextTick(()=>{
-                    this.$refs.supplierAdd.init();
+                    this.$refs.add.init();
                 })
             },
             //下架
@@ -299,6 +293,24 @@
             currentChangeHandle(val) {
                 this.pageIndex = val;
                 this.getDataList();
+            },
+            // 格式化食品类目
+            categoryLabel(row, column, cellValue, index) {
+                if (cellValue == "001") {
+                    return "糖果类";
+                } else if (cellValue == "002") {
+                    return "坚果类";
+                } else if (cellValue == "003") {
+                    return "饼干类";
+                } else if (cellValue == "004") {
+                    return "烟酒类";
+                }else if (cellValue == "005") {
+                    return "饮品类";
+                }else if (cellValue == "006") {
+                    return "膨化类";
+                }else if (cellValue == "007") {
+                    return "肉干类";
+                }
             },
         }
     }

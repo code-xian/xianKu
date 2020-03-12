@@ -7,6 +7,7 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import zzx.jxc.VO.FahuoOrderInfoVO;
 import zzx.jxc.VO.SaleOrderInfoVO;
 import zzx.jxc.dto.OrderCartDTO;
@@ -29,6 +30,7 @@ import zzx.jxc.util.ddbhUtil;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,6 +62,7 @@ public class FahuoServiceImpl implements FahuoService {
     }
 
     @Override
+    @Transactional
     public void create(SaleMaster saleMaster) {
         String fhd = ddbhUtil.xsdd(countByFahuoIdLike(),"FHD");
 
@@ -88,7 +91,22 @@ public class FahuoServiceImpl implements FahuoService {
         FahuoOrderInfoVO fahuoOrderInfoVO = new FahuoOrderInfoVO();
         FahuoMaster fahuoMasterByFahuoId = fahuoDao.findFahuoMasterByFahuoId(fahuoId);
         SaleOrderInfoVO one = saleService.findOne(fahuoMasterByFahuoId.getSourceOrder());
-        BeanUtils.copyProperties(one,fahuoOrderInfoVO);
+        //        BeanUtils.copyProperties() 直接copy数组会导致泛型错误
+        BeanUtils.copyProperties(one,fahuoOrderInfoVO,"detailList");
+        List<FahuoDetail> fahuoDetails = new ArrayList();
+        for(SaleDetail saleDetail:one.getDetailList()){
+            FahuoDetail fahuoDetail = new FahuoDetail();
+            fahuoDetail.setDetailPrice(saleDetail.getDetailPrice());
+            fahuoDetail.setFoodId(saleDetail.getFoodId());
+            fahuoDetail.setFoodQuantity(saleDetail.getFoodQuantity());
+            fahuoDetail.setStockId(saleDetail.getStockId());
+            fahuoDetail.setFoodName(saleDetail.getFoodName());
+            fahuoDetail.setStockName(saleDetail.getStockName());
+            fahuoDetail.setDetailRemarks(saleDetail.getDetailRemarks());
+            fahuoDetail.setFoodPrice(saleDetail.getFoodPrice());
+            fahuoDetails.add(fahuoDetail);
+        }
+        fahuoOrderInfoVO.setDetailList(fahuoDetails);
         return fahuoOrderInfoVO;
     }
 
@@ -106,6 +124,7 @@ public class FahuoServiceImpl implements FahuoService {
     }
 
     @Override
+    @Transactional
     public void cancel(String fahuoId) {
         //判断订单状态
         FahuoMaster fahuoMasterByFahuoId = fahuoDao.findFahuoMasterByFahuoId(fahuoId);

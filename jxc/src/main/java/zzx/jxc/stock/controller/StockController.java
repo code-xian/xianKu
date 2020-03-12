@@ -22,29 +22,30 @@ public class StockController {
 
     @Autowired
     private StockService stockService;
+
     /**
      * 查询仓库列表
      */
     @GetMapping("/list")
     @CrossOrigin(origins = "*")
     public ResultVO findAll(
-                            @RequestParam(required = false) String name,
-                            @RequestParam(required = false) String typeNumber,
-                            @RequestParam Integer page,
-                            @RequestParam Integer size) {
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String typeNumber,
+            @RequestParam Integer page,
+            @RequestParam Integer size) {
         try {
-            PageRequest pageRequest = PageRequest.of(page-1, size);
+            PageRequest pageRequest = PageRequest.of(page - 1, size);
             Stock stock = new Stock();
             stock.setStockName(name);
-            if(typeNumber.equals("全部")){
+            if (typeNumber.equals("全部")) {
                 stock.setStockType("");
-            }else{
+            } else {
                 stock.setStockType(typeNumber);
             }
             Page<Stock> stockList = stockService.findAll(stock, pageRequest);
             return ResultVOUtil.success(stockList, "ok");
         } catch (Exception e) {
-            return ResultVOUtil.error(1,"查询仓库错误");
+            return ResultVOUtil.error(1, "查询仓库错误");
         }
     }
 
@@ -56,7 +57,7 @@ public class StockController {
     @CrossOrigin(origins = "*")
     public ResultVO save(@RequestBody Stock stock) {
         try {
-            Integer count = (int)stockService.count();
+            Integer count = (int) stockService.count();
             String stockId = CommonIdUtil.commonId(count);
             stock.setStockId(stockId);
             stockService.save(stock);
@@ -119,5 +120,21 @@ public class StockController {
         } catch (Exception e) {
             return ResultVOUtil.error(1, "查询下拉列表失败");
         }
+    }
+
+    /**
+     * 查询单个仓库
+     */
+    @GetMapping("/detail")
+    @CrossOrigin(origins = "*")
+    public ResultVO findOne(@RequestParam(required = false) String stockId) {
+        try {
+            Stock oneById = stockService.findOneById(stockId);
+            return ResultVOUtil.success(oneById, "ok");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResultVOUtil.error(1, "查询单个仓库详情错误");
+        }
+
     }
 }

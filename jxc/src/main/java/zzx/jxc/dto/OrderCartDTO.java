@@ -2,8 +2,10 @@ package zzx.jxc.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class OrderCartDTO {
+public class OrderCartDTO implements Serializable {
     private String foodId;
     private Integer saleQuantity;
     private String stockId;
@@ -17,4 +19,6 @@ public class OrderCartDTO {
     public OrderCartDTO() {
 
     }
+
+
 }

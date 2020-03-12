@@ -1,3 +1,4 @@
+const webpack = require('webpack')
 module.exports = {
     // chainWebpack: config => {
     //     // 修复HMR
@@ -7,7 +8,10 @@ module.exports = {
     publicPath: "/",
     // outputDir:'dist',
     // assetsDir: 'static',
-
+    // plugins: [new webpack.HotModuleReplacementPlugin()],
+    // configureWebpack: {
+    //     plugins: [new webpack.HotModuleReplacementPlugin()],
+    // },
     devServer: {
         hot: true,
         port: 8099, // 端口号
@@ -22,7 +26,8 @@ module.exports = {
         //         // }
         //     }
         // },
-        disableHostCheck: true,//webpack4.0 开启热更新
+        disableHostCheck: false,//webpack4.0 开启热更新
+
     },
     css: {
         // 是否使用css分离插件 ExtractTextPlugin
@@ -30,10 +35,9 @@ module.exports = {
         // 开启 CSS source maps?
         sourceMap: false,
         // css预设器配置项
-        loaderOptions: {
-        },
+        loaderOptions: {},
         // 启用 CSS modules for all css / pre-processor files.
         modules: false,
     },
 
-  }
+};

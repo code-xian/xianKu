@@ -48,7 +48,7 @@ public class FoodStockServiceImpl implements FoodStockService {
      */
     @Override
     public Page<FoodStockVO> findAll(String stockId, Pageable pageable, String categoryId) {
-        Page<FoodStock> allByStockPage = foodStockDao.findAllByStockId(stockId, pageable);
+        List<FoodStock> allByStockPage = foodStockDao.findAllByStockId(stockId);
         List<String> foodIds = allByStockPage.stream().map(FoodStock::getFoodId).collect(Collectors.toList());
         List<FoodInfo> allByFoodIdIn = foodInfoDao.findAllByFoodIdIn(foodIds);
         List<FoodStockVO> foodStockVOS = new ArrayList<>();
@@ -104,6 +104,11 @@ public class FoodStockServiceImpl implements FoodStockService {
             foodStockByFoodIdAndStockId.setStock(result);
             foodStockDao.save(foodStockByFoodIdAndStockId);
         }
+    }
+
+    @Override
+    public void stockChange(List<OrderCartDTO> cartDTOList) {
+
     }
 
 }

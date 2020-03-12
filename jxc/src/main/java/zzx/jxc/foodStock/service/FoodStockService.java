@@ -17,5 +17,7 @@ public interface FoodStockService {
     //加库存
     void increaseStock(List<OrderCartDTO> cartDTOList);
 
+    //移库
+    void stockChange(List<OrderCartDTO> cartDTOList);
 
 }

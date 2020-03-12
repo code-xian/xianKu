@@ -22,13 +22,13 @@ public class FoodStockController {
      */
     @GetMapping("/list")
     @CrossOrigin(origins = "*")
-    public ResultVO findAll(@RequestParam String stockId,
+    public ResultVO findAll(@RequestParam(required = false) String stockId,
                             @RequestParam(required = false) String categoryId,
                             @RequestParam Integer page,
                             @RequestParam Integer size) {
         try {
             PageRequest pageRequest = PageRequest.of(page-1, size);
-            if(categoryId.equals("")||categoryId.isEmpty()){
+            if(categoryId.equals("")||categoryId.isEmpty()||categoryId==null){
                 categoryId = "";
             }
             Page<FoodStockVO> all = stockService.findAll(stockId, pageRequest, categoryId);

@@ -1,6 +1,8 @@
 package zzx.jxc.sale.controller;
 
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +16,7 @@ import zzx.jxc.sale.entity.SaleMaster;
 import zzx.jxc.sale.service.SaleService;
 import zzx.jxc.util.ResultVOUtil;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +58,7 @@ public class SaleController {
             saleService.create(saleOrderDTO);
             return ResultVOUtil.success("创建供应订单成功");
         } catch (Exception e) {
+            e.printStackTrace();
             return ResultVOUtil.error(1, "创建供应订单失败");
         }
     }
@@ -102,13 +106,21 @@ public class SaleController {
     @CrossOrigin(origins = "*")
     public ResultVO audit(@RequestBody Map<String,Object> params) {
         try {
+            Gson gson = new Gson();
             SaleOrderDTO saleOrderDTO = new SaleOrderDTO();
             saleOrderDTO.setSaleId((String) params.get("saleId"));
             saleOrderDTO.setSubmissionWay((String) params.get("submissionWay"));
             saleOrderDTO.setSubmissionDate((Date) params.get("submissionDate"));
             saleOrderDTO.setSaleRemarks((String) params.get("saleRemarks"));
             saleOrderDTO.setReviewer((String) params.get("reviewer"));
-            saleOrderDTO.setSaleDetailList((List<OrderCartDTO>) params.get("list"));
+            Object list1 = params.get("list");
+            List<OrderCartDTO> orderCartDTOS = new ArrayList<>();
+            //特殊符号 需要replace
+            System.out.println(list1.toString());
+            orderCartDTOS = gson.fromJson(list1.toString().replaceAll(":", "：").replace("/", ""), new TypeToken<List<OrderCartDTO>>() {
+            }.getType());
+
+            saleOrderDTO.setSaleDetailList(orderCartDTOS);
             if (params.get("orderStatus").equals(0)) {     //0 审核通过    1审核不通过
                 saleService.finish(saleOrderDTO);
             }else if(params.get("orderStatus").equals(1)){
@@ -116,6 +128,7 @@ public class SaleController {
             }
             return ResultVOUtil.success("审核成功");
         } catch (Exception e) {
+            e.printStackTrace();
             return ResultVOUtil.error(1, "审核错误");
         }
     }

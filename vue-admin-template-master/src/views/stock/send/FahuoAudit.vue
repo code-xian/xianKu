@@ -160,7 +160,7 @@
 
 <script>
     export default {
-        name: "OutAudit",
+        name: "FahuoAudit",
         data() {
             return{
                 number:0,
@@ -181,7 +181,7 @@
                     storeFzr: "",
                     totalAmount:"",
                 },
-                chukuId:"",
+                fahuoId:"",
                 flag:"",
                 totalAmount:0,
             }
@@ -196,9 +196,9 @@
             }
         },
         methods:{
-            init(chukuId,flag,totalAmount) {
+            init(fahuoId,flag,totalAmount) {
                 this.flag = flag
-                this.chukuId = chukuId;
+                this.fahuoId = fahuoId;
                 this.totalAmount = totalAmount
                 this.visible = true
                 this.dataFormSubmitDisabled = false
@@ -208,10 +208,10 @@
             dataFormSubmit(flag){
                 this.dataFormSubmitDisabled = true
                 this.$http({
-                    url: "/chuku/audit",
+                    url: "/fahuo/audit",
                     method: "post",
                     data: this.$http.adornData({
-                        chukuId:this.chukuId,
+                        fahuoId:this.fahuoId,
                         orderStatus:flag,
                     })
                 }).then(({ data }) => {
@@ -237,10 +237,10 @@
                 this.dataListLoading = true;
                 this.$nextTick(() => {
                     this.$http({
-                        url: "/chuku/detail",
+                        url: "/fahuo/detail",
                         method: "get",
                         params: this.$http.adornParams({
-                            chukuId:this.chukuId,
+                            fahuoId:this.fahuoId,
                         })
                     }).then(({ data }) => {
                         if (data && data.code === 0) {
@@ -333,8 +333,6 @@
         margin-bottom: 0;
     }
 </style>
-
-
 
 
 

@@ -69,7 +69,7 @@
                         prop="submissionDate"
                         header-align="center"
                         align="center"
-                        :formatter="dateFormat2"
+                        :formatter="dateFormat"
                         label="交货期限"
                         width="145">
                 </el-table-column>
@@ -248,12 +248,7 @@
                 this.dataListSelections = val;
             },
             dateFormat(row, column, cellValue, index) {
-                const date = row.createTime
-                if(date == null){return ''};
-                return this.$moment(date).format("YYYY-MM-DD HH:mm:ss")
-            },
-            dateFormat2(row, column, cellValue, index) {
-                const date = row.submissionDate
+                const date = cellValue
                 if(date == null){return ''};
                 return this.$moment(date).format("YYYY-MM-DD")
             },
