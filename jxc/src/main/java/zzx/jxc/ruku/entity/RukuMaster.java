@@ -1,4 +1,4 @@
-package zzx.jxc.shouhuo.entity;
+package zzx.jxc.ruku.entity;
 
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
@@ -11,21 +11,21 @@ import java.util.Date;
 @Entity
 @Data
 @DynamicUpdate
-public class ShouhuoMaster {
+public class RukuMaster {
     @Id
-    private String shouhuoId;
+    private String rukuId;
+    private String orderType;
     private String supplierName;
     private String supplierPhone;
     private String supplierAddress;
     private String supplierFzr;
-    private String shouhuoWay;
-    private String shouhuoRemarks;
-    private Integer shouhuoStatus = OrderStatusEnum.UNAUDITED.getCode();
-    private String reviewer;  //审核人
+    private BigDecimal rukuMoney;
+    private String rukuRemarks;
+    private Integer rukuStatus = OrderStatusEnum.UNAUDITED.getCode();;
+    private Date rukuDate;
     private String sourceOrder;
-    private String shouhuoType;
     private Date createTime;
     private Date updateTime;
-    private BigDecimal purchaseAmount;
-    private Date submissionDate;
+    private String shouhuoWay;
+    private String reviewer;
 }

@@ -1,12 +1,12 @@
 package zzx.jxc.VO;
 
 import lombok.Data;
-import zzx.jxc.shouhuo.entity.ShouhuoDetail;
+import zzx.jxc.ruku.entity.RukuDetail;
 
 import java.util.List;
 
 @Data
-public class ShouhuoOrderInfoVO {
+public class RukuOrderInfoVO {
     private String supplierName;
     private String supplierPhone;
     private String supplierAddress;
@@ -14,5 +14,5 @@ public class ShouhuoOrderInfoVO {
     private String supplierFzr;
     private String submissionWay;
     private String submissionDate;
-    private List<ShouhuoDetail> detailList;
+    private List<RukuDetail> detailList;
 }

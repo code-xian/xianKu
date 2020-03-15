@@ -23,6 +23,7 @@ import zzx.jxc.purchase.dao.PurchaseDetailDao;
 import zzx.jxc.purchase.entity.PurchaseDetail;
 import zzx.jxc.purchase.entity.PurchaseMaster;
 import zzx.jxc.purchase.service.PurchaseService;
+import zzx.jxc.shouhuo.service.ShouhuoService;
 import zzx.jxc.stock.service.StockService;
 import zzx.jxc.supplier.entity.Supplier;
 import zzx.jxc.supplier.service.SupplierService;
@@ -35,7 +36,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PurchaseServiceImpl implements PurchaseService {
@@ -55,6 +55,8 @@ public class PurchaseServiceImpl implements PurchaseService {
     private FoodInfoDao foodInfoDao;
     @Autowired
     private FoodCategoryDao foodCategoryDao;
+    @Autowired
+    private ShouhuoService shouhuoService;
 
     @Override
     public Integer countByPurchaseIdLike() {
@@ -167,10 +169,7 @@ public class PurchaseServiceImpl implements PurchaseService {
         if (save == null) {
             throw new SellException(ResultEnum.ORDER_AUDIT_FAIL);
         }
-        //4.加库存 在审核通过才加库存
-        List<OrderCartDTO> collect = purchaseOrderDTO.getPurchaseDetailList().stream().map(e -> new OrderCartDTO(e.getFoodId(), e.getSaleQuantity(), e.getStockId())).collect(Collectors.toList());
-        foodStockService.increaseStock(collect);
-//        fahuoService.create(saleMasterBySaleId);  //TODO
+        shouhuoService.create(purchaseMasterByPurchaseId);
         return null;
     }
 
@@ -198,6 +197,5 @@ public class PurchaseServiceImpl implements PurchaseService {
 
         Page<PurchaseFoodSelectListVO> allList = new PageImpl<PurchaseFoodSelectListVO>(purchaseFoodSelectListVOS, pageable, size);
         return allList;
-//        return null;
     }
 }

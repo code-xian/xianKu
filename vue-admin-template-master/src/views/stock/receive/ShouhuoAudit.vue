@@ -160,7 +160,7 @@
 
 <script>
     export default {
-        name: "InAudit",
+        name: "ShouhuoAudit",
         data() {
             return{
                 number:0,
@@ -181,7 +181,7 @@
                     supplierFzr: "",
                     totalAmount:"",
                 },
-                rukuId:"",
+                shouhuoId:"",
                 flag:"",
                 totalAmount:0,
             }
@@ -196,9 +196,9 @@
             }
         },
         methods:{
-            init(rukuId,flag,totalAmount) {
+            init(shouhuoId,flag,totalAmount) {
                 this.flag = flag
-                this.rukuId = rukuId;
+                this.shouhuoId = shouhuoId;
                 this.totalAmount = totalAmount
                 this.visible = true
                 this.dataFormSubmitDisabled = false
@@ -208,10 +208,10 @@
             dataFormSubmit(flag){
                 this.dataFormSubmitDisabled = true
                 this.$http({
-                    url: "/ruku/audit",
+                    url: "/shouhuo/audit",
                     method: "post",
                     data: this.$http.adornData({
-                        rukuId:this.rukuId,
+                        shouhuoId:this.shouhuoId,
                         orderStatus:flag,
                     })
                 }).then(({ data }) => {
@@ -237,10 +237,10 @@
                 this.dataListLoading = true;
                 this.$nextTick(() => {
                     this.$http({
-                        url: "/ruku/detail",
+                        url: "/shouhuo/detail",
                         method: "get",
                         params: this.$http.adornParams({
-                            rukuId:this.rukuId,
+                            shouhuoId:this.shouhuoId,
                         })
                     }).then(({ data }) => {
                         if (data && data.code === 0) {
@@ -333,8 +333,6 @@
         margin-bottom: 0;
     }
 </style>
-
-
 
 
 
