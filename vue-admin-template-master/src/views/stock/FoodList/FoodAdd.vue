@@ -11,8 +11,11 @@
                 <el-form-item label="食品名称" prop="name">
                     <el-input v-model="form.name" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="食物价格" prop="price">
+                <el-form-item label="食物售价" prop="price">
                     <el-input-number v-model="form.price" :precision="2" :step="0.1":min="0" controls-position="right"></el-input-number>
+                </el-form-item>
+                <el-form-item label="进价" prop="purchasePrice">
+                    <el-input-number v-model="form.purchasePrice" :precision="2" :step="0.1":min="0" controls-position="right"></el-input-number>
                 </el-form-item>
                 <el-form-item label="保质期" prop="life">
                     <el-input-number v-model="form.life" controls-position="right" :min="1" :max="100" :step="1"></el-input-number>
@@ -55,6 +58,7 @@
                 loading:'',
                 form: {
                     name: '',
+                    purchasePrice:'',
                     price:'',
                     life:'',
                     category:'',
@@ -66,6 +70,9 @@
                         { required: true, message: '请输入食品名称', trigger: 'blur' },
                     ],
                     price: [
+                        { required: true, message: '请输入食品价格', trigger: 'blur' }
+                    ],
+                    purchasePrice: [
                         { required: true, message: '请输入食品价格', trigger: 'blur' }
                     ],
                     life: [
@@ -106,7 +113,7 @@
                                 categoryId:this.form.category,
                                 shelfLife:this.form.life,
                                 foodDescription:this.form.jianjie,
-
+                                purchasePrice:this.form.purchasePrice,
                             })
                         }).then(({data}) => {
                             this.loading.close();

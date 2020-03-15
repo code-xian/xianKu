@@ -124,31 +124,11 @@
             }
         },
         methods: {
-            init (id) {
+            init () {
                 this.visible = true
                 this.$nextTick(() => {
-                    this.$refs['dataForm'].resetFields()
-                })
-                this.dataForm.id = ''
-                if (id) {
-                    this.dataForm.id = id;
-                    this.$http({
-                        url: this.$http.adornUrl(`/kehuxinyongguanli/creditrules/info/${this.dataForm.id}`),
-                        method: "get",
-                        params: this.$http.adornParams()
-                    }).then(({ data }) => {
-                        if (data && data.code === 0) {
-                            this.dataForm.ruleType = data.creditRules.ruleClassify
-                            this.dataForm.creditRule = data.creditRules.ruleName
-                            this.dataForm.beizhu = data.creditRules.remark
-                            this.dataForm.dataSource = data.creditRules.dataSources
-                            this.dataForm.yunsuanluoji = data.creditRules.arithmeticLogic
-                            this.dataForm.pingfen = data.creditRules.grade
-                        }else {
-                            this.$message.error(data.msg);
-                        }
-                    });
-                }
+                    this.$refs.dataForm.resetFields();
+                });
             },
             // 表单提交
             dataFormSubmit () {

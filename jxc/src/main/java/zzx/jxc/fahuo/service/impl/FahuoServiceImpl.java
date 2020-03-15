@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zzx.jxc.VO.FahuoOrderInfoVO;
 import zzx.jxc.VO.SaleOrderInfoVO;
+import zzx.jxc.chuku.service.ChukuService;
 import zzx.jxc.dto.OrderCartDTO;
 import zzx.jxc.enums.OrderStatusEnum;
 import zzx.jxc.enums.ResultEnum;
@@ -52,6 +53,8 @@ public class FahuoServiceImpl implements FahuoService {
     private SaleService saleService;
     @Autowired
     private FoodStockService foodStockService;
+    @Autowired
+    private ChukuService chukuService;
 
     @Override
     public Integer countByFahuoIdLike() {
@@ -155,5 +158,6 @@ public class FahuoServiceImpl implements FahuoService {
         if (save == null) {
             throw new SellException(ResultEnum.ORDER_AUDIT_FAIL);
         }
+        chukuService.create(fahuoMasterByFahuoId);
     }
 }

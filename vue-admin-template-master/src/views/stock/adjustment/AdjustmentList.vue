@@ -81,6 +81,11 @@
                 ref="adjustmentOverview"
                 @refreshDataList="getDataList"
         ></adjustment-overview>
+        <stock-add
+                v-if="addVisible"
+                ref="add"
+                @refreshDataList="getDataList"
+        ></stock-add>
     </div>
 </template>
 
@@ -101,6 +106,7 @@
                 pageSize: 20,
                 totalPage: 0,
                 dataListLoading: false,
+                addVisible: false,
                 dataListSelections: [],
                 adjustmentOverviewVisible: false,
                 stockTypeList: [
@@ -209,12 +215,15 @@
             },
             //新增
             add() {
-
+                this.addVisible = true;
+                this.$nextTick(() => {
+                    this.$refs.add.init();
+                });
             },
             // 查询仓库类型下拉列表
             getStatusList() {
                 this.$http({
-                    url: "/stock/list/stockName",
+                    url: "/stock/list/stockType",
                     method: "get",
                     params: this.$http.adornParams()
                 }).then(({ data }) => {

@@ -24,7 +24,7 @@ public class FoodInfoServiceImpl implements FoodInfoService {
         ExampleMatcher exampleMatcher = ExampleMatcher.matching()
                 .withMatcher("foodName",ExampleMatcher.GenericPropertyMatchers.contains())//contains是storeId 包含的数据
                 .withMatcher("categoryId",ExampleMatcher.GenericPropertyMatchers.contains())
-                .withIgnorePaths("foodStatus");//isFace字段不参与匹配
+                .withIgnorePaths("foodStatus").withIgnorePaths("purchasePrice");//isFace字段不参与匹配
         //创建实例
         Example<FoodInfo> example = Example.of(foodInfo,exampleMatcher);
         Page<FoodInfo> foodInfoList = foodInfoDao.findAll(example, pageable);

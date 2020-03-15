@@ -100,9 +100,9 @@ public class StockController {
     }
 
     /**
-     * 查询下拉列表
+     * 查询下拉列表(仓库类型)
      */
-    @GetMapping("/list/stockName")
+    @GetMapping("/list/stockType")
     @CrossOrigin(origins = "*")
     public ResultVO findStockList() {
         try {
@@ -114,6 +114,28 @@ public class StockController {
                 Map<String, String> result = new HashMap<>();
 //                result.put("value", stockIdList.get(key));
                 result.put("label", stockTypeList.get(key));
+                list.add(result);
+            }
+            return ResultVOUtil.success(list, "ok");
+        } catch (Exception e) {
+            return ResultVOUtil.error(1, "查询下拉列表失败");
+        }
+    }
+    /**
+     * 查询下拉列表(仓库字典)
+     */
+    @GetMapping("/list/stockName")
+    @CrossOrigin(origins = "*")
+    public ResultVO findStockList2() {
+        try {
+            List<Stock> stockList = stockService.findAll();
+            List<String> stockIdList = stockList.stream().map(Stock::getStockId).collect(Collectors.toList());
+            List<String> stockNameList = stockList.stream().map(Stock::getStockName).collect(Collectors.toList());
+            ArrayList<Map<String, String>> list = new ArrayList<>();
+            for (int key = 0; key < stockList.size(); key++) {
+                Map<String, String> result = new HashMap<>();
+                result.put("value", stockIdList.get(key));
+                result.put("label", stockNameList.get(key));
                 list.add(result);
             }
             return ResultVOUtil.success(list, "ok");

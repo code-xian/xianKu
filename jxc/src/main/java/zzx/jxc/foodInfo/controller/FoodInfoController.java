@@ -42,6 +42,7 @@ public class FoodInfoController {
             Page<FoodInfo> foodInfoList = foodInfoService.findAll(foodInfo, pageRequest);
             return ResultVOUtil.success(foodInfoList, "ok");
         } catch (Exception e) {
+            e.printStackTrace();
             return ResultVOUtil.error(1,"查询食品列表错误");
         }
     }
@@ -60,6 +61,7 @@ public class FoodInfoController {
             foodInfoService.save(foodInfo);
             return ResultVOUtil.success("ok");
         } catch (Exception e) {
+            e.printStackTrace();
             return ResultVOUtil.error(1, "新增食品失败");
         }
     }

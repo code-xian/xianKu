@@ -17,6 +17,7 @@ public class FoodInfo {
     private String foodId;
     private String foodName;
     private BigDecimal foodPrice;
+    private BigDecimal purchasePrice;
     private String foodDescription;
     private String categoryId;
     private Integer shelfLife;

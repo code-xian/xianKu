@@ -17,17 +17,14 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private AdminDao adminDao;
-
     @Override
     public Administrators getOne(Integer id) {
         return adminDao.getOne(id);
     }
-
     @Override
     public List<Administrators> findAll() {
         return adminDao.findAll();
     }
-
     @Override
     public Page<Administrators> findAll(Administrators administrators, Pageable pageable) {
         ExampleMatcher exampleMatcher = ExampleMatcher.matching()
@@ -38,23 +35,18 @@ public class AdminServiceImpl implements AdminService {
         Page<Administrators> all = adminDao.findAll(example, pageable);
         return all;
     }
-
-
     @Override
     public Administrators save(Administrators administrators) {
         return adminDao.save(administrators);
     }
-
     @Override
     public Administrators findAdministratorsByAdminUsername(String AdminUsername) {
         return adminDao.findAdministratorsByAdminUsername(AdminUsername);
     }
-
     @Override
     public List<Administrators> findByAdminUsername(String AdminUsername) {
         return adminDao.findByAdminUsername(AdminUsername);
     }
-
     @Override
     public void delete(Integer id) {
         adminDao.deleteById(id);

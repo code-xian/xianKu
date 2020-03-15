@@ -12,10 +12,10 @@
             <el-row style="margin-bottom: 10px;">
                 <el-col :span="24">
                     <el-form
-                        :model="dataForm"
-                         ref="dataForm"
-                        :rules="dataFormRules"
-                         @keyup.enter.native="dataFormSubmit()"
+                            :model="dataForm"
+                            ref="dataForm"
+                            :rules="dataFormRules"
+                            @keyup.enter.native="dataFormSubmit()"
                     >
                         <el-card class="box-card">
                             <table class="tabBox">
@@ -49,14 +49,14 @@
                                             </el-date-picker>
                                         </el-form-item>
                                     </td>
-                                    <td class="label"><span style="color:red;">*</span>供应门店：</td>
+                                    <td class="label"><span style="color:red;">*</span>供应商：</td>
                                     <td class="content">
-                                        <el-form-item prop="storeName">
+                                        <el-form-item prop="supplierName">
                                             <el-input
 
-                                                    v-model="dataForm.storeName"
+                                                    v-model="dataForm.supplierName"
                                                     class="input-with-select"
-                                                    placeholder="请选择供应门店"
+                                                    placeholder="请选择供应商"
                                                     :readonly="true"
                                             >
                                                 <el-button slot="append" icon="el-icon-search" @click="selectSupplier()"></el-button>
@@ -87,14 +87,14 @@
                     <i class="el-icon-share icon" style="color:coral;"></i>订单详情明细
                     <el-button style="float: right;margin:5px 10px" type="danger" round size="small" plain @click="delFood()">删除食品</el-button>
                     <el-button style="float: right;margin:5px 10px" type="primary" round size="small" plain @click="addFood()">添加食品</el-button>
-<!--                    <el-select v-model="value" placeholder="请选择" @change="selectGetData()" style="float: right;margin-right:5px">-->
-<!--                        <el-option-->
-<!--                                v-for="item in categoryList"-->
-<!--                                :key="item.value"-->
-<!--                                :label="item.label"-->
-<!--                                :value="item.value">-->
-<!--                        </el-option>-->
-<!--                    </el-select>-->
+                    <!--                    <el-select v-model="value" placeholder="请选择" @change="selectGetData()" style="float: right;margin-right:5px">-->
+                    <!--                        <el-option-->
+                    <!--                                v-for="item in categoryList"-->
+                    <!--                                :key="item.value"-->
+                    <!--                                :label="item.label"-->
+                    <!--                                :value="item.value">-->
+                    <!--                        </el-option>-->
+                    <!--                    </el-select>-->
                 </div>
                 <div class="tableData">
                     <el-table
@@ -109,7 +109,7 @@
                             v-loading="dataListLoading"
                             @selection-change="selectionChangeHandle"
                             style="width: 99%;">
-<!--                        <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>-->
+                        <!--                        <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>-->
                         <el-table-column
                                 type="index"
                                 width="50"
@@ -132,10 +132,10 @@
                         >
                         </el-table-column>
                         <el-table-column
-                                prop="foodPrice"
+                                prop="purchasePrice"
                                 header-align="center"
                                 align="center"
-                                label="单价(元)"
+                                label="进价(元)"
                         >
                         </el-table-column>
                         <el-table-column
@@ -163,10 +163,23 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                                prop="stockName"
                                 header-align="center"
                                 align="center"
-                                label="发货仓库">
+                                label="入货仓库">
+                            <template slot-scope="scope">
+                                <el-select
+                                        v-model="scope.row.stockId"
+                                        value-key="value"
+                                        placeholder="请选择"
+                                >
+                                    <el-option
+                                            v-for="item in stockNameList"
+                                            :key="item.value"
+                                            :label="item.label"
+                                            :value="item.value"
+                                    ></el-option>
+                                </el-select>
+                            </template>
                         </el-table-column>
                         <el-table-column
                                 prop="foodDescription"
@@ -182,7 +195,7 @@
                                 prop="totalAmount"
                                 label="金额(元)">
                             <template slot-scope="scope">
-                                <div>{{scope.row.saleQuantity*scope.row.foodPrice}}</div>
+                                <div>{{scope.row.saleQuantity*scope.row.purchasePrice}}</div>
                             </template>
                         </el-table-column>
                         <!--                        <el-table-column-->
@@ -194,16 +207,16 @@
                         <!--                            </template>-->
                         <!--                        </el-table-column>-->
                     </el-table>
-<!--                    <el-pagination-->
-<!--                            class="page"-->
-<!--                            @size-change="sizeChangeHandle"-->
-<!--                            @current-change="currentChangeHandle"-->
-<!--                            :current-page="pageIndex"-->
-<!--                            :page-sizes="[10, 20, 50, 100]"-->
-<!--                            :page-size="pageSize"-->
-<!--                            :total="dataListSelections.length"-->
-<!--                            layout="total, sizes, prev, pager, next, jumper">-->
-<!--                    </el-pagination>-->
+                    <!--                    <el-pagination-->
+                    <!--                            class="page"-->
+                    <!--                            @size-change="sizeChangeHandle"-->
+                    <!--                            @current-change="currentChangeHandle"-->
+                    <!--                            :current-page="pageIndex"-->
+                    <!--                            :page-sizes="[10, 20, 50, 100]"-->
+                    <!--                            :page-size="pageSize"-->
+                    <!--                            :total="dataListSelections.length"-->
+                    <!--                            layout="total, sizes, prev, pager, next, jumper">-->
+                    <!--                    </el-pagination>-->
                     <div style="float: right;font-size: 18px;margin: 5px 10px">共{{dataList.length}}条</div>
                 </div>
             </el-row>
@@ -215,16 +228,16 @@
               <el-button @click="visible = false">取 消</el-button>
               <el-button type="primary" @click="dataFormSubmit()" :disabled="dataFormSubmitDisabled">确 定</el-button>
          </span>
-        <sale-store-choose-list v-if="storeListDialogVisible" ref="storeListDialog" @sureStore="sureStore"></sale-store-choose-list>
+        <supplier-choose-list v-if="storeListDialogVisible" ref="supplierListDialog" @sureStore="sureStore"></supplier-choose-list>
         <food-list-add v-if="foodListDialogVisible" ref="foodListDialog" @sureFood="sureFood"></food-list-add>
     </el-dialog>
 </template>
 
 <script>
-    import SaleStoreChooseList from "./SaleStoreChooseList";
     import FoodListAdd from "./FoodListAdd";
+    import SupplierChooseList from "./SupplierChooseList";
     export default {
-        name: "SalesOrderAdd",
+        name: "PurchaseAdd",
         data() {
             return{
                 number:0,
@@ -238,6 +251,7 @@
                 pageSize: 20,
                 totalPage: 0,
                 categoryList:[],
+                stockNameList: [],
                 jiaoHuoList:[
                     {value:1,label:"物流"},
                     {vaule:2,label:"空运"}
@@ -245,9 +259,9 @@
                 dataForm:{
                     jiaoHuoFangShi:"",
                     time:"",
-                    storeId:"",
+                    supplierId:"",
                     textarea:"",
-                    storeName:""
+                    supplierName:""
                 },
                 //日期范围
                 expireTimeOption: {
@@ -259,7 +273,7 @@
                 dataFormRules:{
                     jiaoHuoFangShi: [ { required: true, message: "交货方式不能为空" }],
                     time: [ { required: true, message: "交货日期不能为空" }],
-                    storeName: [ { required: true, message: "门店不能为空" }],
+                    supplierName: [ { required: true, message: "供应商不能为空" }],
                 }
             }
         },
@@ -267,13 +281,13 @@
             total() {
                 let a = 0;
                 for(let i = 0; i<this.dataList.length;i++){
-                    a += this.dataList[i].saleQuantity*this.dataList[i].foodPrice
+                    a += this.dataList[i].saleQuantity*this.dataList[i].purchasePrice
                 }
                 return a
             }
         },
         components:{
-            SaleStoreChooseList,
+            SupplierChooseList,
             FoodListAdd
         },
         methods:{
@@ -285,6 +299,7 @@
                 this.$nextTick(() => {
                     this.$refs["dataForm"].resetFields();
                 });
+                this.getStockNameList();
             },
             // 表单提交
             dataFormSubmit(){
@@ -300,15 +315,15 @@
                         }
                         this.dataFormSubmitDisabled = true;
                         this.$http({
-                            url: "/sale/create",
+                            url: "/purchase/create",
                             method: 'post',
                             data: this.$http.adornData({
                                 submissionWay:this.dataForm.jiaoHuoFangShi,
                                 submissionDate: this.dataForm.time,
-                                storeId: this.dataForm.storeId,
-                                saleRemarks: this.dataForm.textarea,
+                                supplierId: this.dataForm.supplierId,
+                                purchaseRemarks: this.dataForm.textarea,
                                 reviewer: this.$store.state.user.adminName,
-                                saleDetailList: this.dataList,
+                                purchaseDetailList: this.dataList,
                             })
                         }).then(({data}) => {
                             if (data && data.code === 0) {
@@ -333,14 +348,14 @@
             selectSupplier(){
                 this.storeListDialogVisible = true;
                 this.$nextTick(() => {
-                    this.$refs.storeListDialog.init();
+                    this.$refs.supplierListDialog.init();
                 });
             },
             //确定门店
             sureStore (obj){
                 this.storeListDialogVisible = false;
-                this.dataForm.storeName = obj.storeName;
-                this.dataForm.storeId = obj.storeId;
+                this.dataForm.supplierName = obj.supplierName;
+                this.dataForm.supplierId = obj.supplierId;
             },
             //确定食品
             sureFood(list) {
@@ -348,7 +363,7 @@
                 this.dataList = list
                 this.$nextTick(() => {
                     this.dataList.forEach(item => {
-                            this.$refs.table.toggleRowSelection(item, true)
+                        this.$refs.table.toggleRowSelection(item, true)
                     })
                 })
             },
@@ -365,6 +380,20 @@
             //删除食品
             delFood() {
 
+            },
+            // 查询仓库类型下拉列表
+            getStockNameList() {
+                this.$http({
+                    url: "/stock/list/stockName",
+                    method: "get",
+                    params: this.$http.adornParams()
+                }).then(({ data }) => {
+                    if (data && data.code === 0) {
+                        this.stockNameList=data.data
+                    } else {
+                        this.stockNameList = [];
+                    }
+                });
             },
             //合计
             getSummaries (param) {
@@ -448,9 +477,11 @@
         background-color: #f0f7ff;
     }
     .el-form-item {
-         margin-bottom: 0;
+        margin-bottom: 0;
     }
 </style>
+
+
 
 
 

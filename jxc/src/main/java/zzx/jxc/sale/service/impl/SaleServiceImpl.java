@@ -70,17 +70,18 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     public Integer countBySaleIdLike() {
-        Date date=new Date();
-        DateFormat format=new SimpleDateFormat("yyyyMMdd");
-        String timeStr=format.format(date);
+        Date date = new Date();
+        DateFormat format = new SimpleDateFormat("yyyyMMdd");
+        String timeStr = format.format(date);
         Integer saleMasterCount = saleDao.countBySaleIdLike("%" + timeStr + "%");
         return saleMasterCount;
     }
 
     @Override
+    @Transactional
     public SaleOrderDTO create(SaleOrderDTO saleOrderDTO) {
 
-        String xsdd = ddbhUtil.xsdd(countBySaleIdLike(),"XSDD");
+        String xsdd = ddbhUtil.xsdd(countBySaleIdLike(), "XSDD");
         BigDecimal orderAmount = new BigDecimal(0);
 
         //1. 查询商品 ( 数量,价格)
@@ -95,22 +96,22 @@ public class SaleServiceImpl implements SaleService {
                     .add(orderAmount);
             //订单详情入库
             SaleDetail saleDetail = new SaleDetail();
-            BeanUtils.copyProperties(oneById,saleDetail);
+            BeanUtils.copyProperties(oneById, saleDetail);
             saleDetail.setDetailRemarks(oneById.getFoodDescription());
             saleDetail.setSaleId(xsdd);
             saleDetail.setDetailId(DetailKeyUtil.genUniqueKey());
             saleDetail.setStockId(orderCartDTO.getStockId());
             saleDetail.setFoodQuantity(orderCartDTO.getSaleQuantity());
             saleDetail.setStockName(stockService.findOneById(orderCartDTO.getStockId()).getStockName());
-            saleDetail.setDetailPrice(oneById.getFoodPrice() .multiply(new BigDecimal(orderCartDTO.getSaleQuantity())));
+            saleDetail.setDetailPrice(oneById.getFoodPrice().multiply(new BigDecimal(orderCartDTO.getSaleQuantity())));
             saleDetailDao.save(saleDetail);
         }
 
         //3.写入销售订单数据库( SaleMaster 和 SaleDetail)
         SaleMaster saleMaster = new SaleMaster();
         Store store = storeService.findOneById(saleOrderDTO.getStoreId());
-        BeanUtils.copyProperties(store,saleOrderDTO);
-        BeanUtils.copyProperties(saleOrderDTO,saleMaster);
+        BeanUtils.copyProperties(store, saleOrderDTO);
+        BeanUtils.copyProperties(saleOrderDTO, saleMaster);
         saleMaster.setSaleId(xsdd);
         saleMaster.setPurchaseAmount(orderAmount);
         saleDao.save(saleMaster);
@@ -137,12 +138,12 @@ public class SaleServiceImpl implements SaleService {
     @Override
     public Page<SaleMaster> findList(SaleMaster saleMaster, Pageable pageable) {
         ExampleMatcher exampleMatcher = ExampleMatcher.matching()
-                .withMatcher("saleId",ExampleMatcher.GenericPropertyMatchers.contains())//contains是storeId 包含的数据
-                .withMatcher("storeName",ExampleMatcher.GenericPropertyMatchers.contains())
-                .withMatcher("saleStatus",ExampleMatcher.GenericPropertyMatchers.contains());
+                .withMatcher("saleId", ExampleMatcher.GenericPropertyMatchers.contains())//contains是storeId 包含的数据
+                .withMatcher("storeName", ExampleMatcher.GenericPropertyMatchers.contains())
+                .withMatcher("saleStatus", ExampleMatcher.GenericPropertyMatchers.contains());
 //                .withIgnorePaths("stockStatus");//isFace字段不参与匹配
         //创建实例
-        Example<SaleMaster> example = Example.of(saleMaster,exampleMatcher);
+        Example<SaleMaster> example = Example.of(saleMaster, exampleMatcher);
         Page<SaleMaster> saleMasterList = saleDao.findAll(example, pageable);
         return saleMasterList;
     }
@@ -164,7 +165,7 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     @Transactional
-    public SaleOrderDTO finish(SaleOrderDTO saleOrderDTO) throws RuntimeException{
+    public SaleOrderDTO finish(SaleOrderDTO saleOrderDTO) throws RuntimeException {
         //判断订单状态
         SaleMaster saleMasterBySaleId = saleDao.findSaleMasterBySaleId(saleOrderDTO.getSaleId());
         if (!saleMasterBySaleId.getSaleStatus().equals(OrderStatusEnum.UNAUDITED.getCode())) {
@@ -188,17 +189,17 @@ public class SaleServiceImpl implements SaleService {
         Stock stock = new Stock();
         stock.setStockName(stockName);
         ExampleMatcher exampleMatcher = ExampleMatcher.matching()
-                .withMatcher("stockName",ExampleMatcher.GenericPropertyMatchers.contains())//contains是storeId 包含的数据
+                .withMatcher("stockName", ExampleMatcher.GenericPropertyMatchers.contains())//contains是storeId 包含的数据
 //                .withMatcher("stockType",ExampleMatcher.GenericPropertyMatchers.contains())
                 .withIgnorePaths("stockStatus");//isFace字段不参与匹配
         //创建实例
-        Example<Stock> example = Example.of(stock,exampleMatcher);
+        Example<Stock> example = Example.of(stock, exampleMatcher);
         List<Stock> stockList = stockDao.findAll(example);   //找到仓库id 来查所有食品
         List<String> collectStockIDList = stockList.stream().map(Stock::getStockId).collect(Collectors.toList());
 //        List<FoodStock> allByStockIdIn = foodStockDao.findAllByStockIdIn(collectStockIDList); //所有的有库存的食品list
         List<SaleFoodSelectListVO> allSaleFoodSelectListVO = new ArrayList<>();
-        for (String stockId:collectStockIDList) {
-            if (stockDao.findStockByStockId(stockId).getStockStatus()!=0) {  //判断出库是否为废弃仓库
+        for (String stockId : collectStockIDList) {
+            if (stockDao.findStockByStockId(stockId).getStockStatus() != 0) {  //判断出库是否为废弃仓库
                 continue;
             }
             List<FoodStock> allByStockPage = foodStockDao.findAllByStockId(stockId);
@@ -206,12 +207,12 @@ public class SaleServiceImpl implements SaleService {
             List<FoodInfo> allByFoodIdIn = foodInfoDao.findAllByFoodIdIn(foodIds);
             List<SaleFoodSelectListVO> saleFoodSelectListVOList = new ArrayList<>();
             for (FoodInfo foodInfo : allByFoodIdIn) {
-                if(!categoryId.isEmpty()||!categoryId.equals("")){
+                if (!categoryId.isEmpty() || !categoryId.equals("")) {
                     if (!categoryId.equals(foodInfo.getCategoryId())) {
                         continue;
                     }
                 }
-                if(!foodName.isEmpty()||!foodName.equals("")){
+                if (!foodName.isEmpty() || !foodName.equals("")) {
                     if (!foodInfo.getFoodName().contains(foodName)) {
                         continue;
                     }
@@ -230,7 +231,7 @@ public class SaleServiceImpl implements SaleService {
         }
         int size = allSaleFoodSelectListVO.size();
 
-        Page<SaleFoodSelectListVO> allList = new PageImpl<SaleFoodSelectListVO>(allSaleFoodSelectListVO,pageable,size);
+        Page<SaleFoodSelectListVO> allList = new PageImpl<SaleFoodSelectListVO>(allSaleFoodSelectListVO, pageable, size);
         return allList;
     }
 }

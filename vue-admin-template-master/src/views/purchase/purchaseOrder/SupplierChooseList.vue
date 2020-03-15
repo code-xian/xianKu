@@ -1,7 +1,7 @@
 <template>
     <!-- 地址列表的查询组件 -->
     <el-dialog
-            title="食品选择"
+            title="供应商选择"
             :close-on-click-modal="false"
             :modal="true"
             :modal-append-to-body="false"
@@ -12,21 +12,10 @@
             top="7vh"
     >
         <el-form :inline="true" :model="dataForm" @keyup.enter.native="getCasDataInfo()">
-            <el-form-item label="食品名称">
-                <el-input  placeholder="请输入食品名称" clearable v-model="dataForm.foodName"></el-input>
-            </el-form-item>
-            <el-form-item label="发货仓库名称">
-                <el-input  placeholder="请输入发货仓库名称" clearable v-model="dataForm.stockName"></el-input>
-            </el-form-item>
-            <el-form-item label="食品种类">
-                <el-select v-model="dataForm.foodCategory" clearable>
-                    <el-option
-                            v-for="item in foodCategoryList"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                    ></el-option>
-                </el-select>
+            <el-form-item>
+                <el-input v-model="dataForm.supllierName"  clearable>
+                    <template slot="prepend">供应商名称</template>
+                </el-input>
             </el-form-item>
             <el-form-item>
                 <el-button icon="el-icon-search" type="warning" @click="getCasDataInfo()">查询</el-button>
@@ -35,15 +24,23 @@
         <div class="tableData">
             <el-table
                     :data="dataList"
+                    @row-click="rowClick"
                     border
                     max-height="90%"
-                    height="90%"
                     :header-cell-style="{background:'#f5f7fa'}"
                     v-loading="dataListLoading"
                     style="width: 99%;"
-                    @selection-change="selectionChangeHandle"
             >
-                <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
+                <el-table-column  width="65">
+                    <template slot-scope="scope">
+                        <el-radio
+                                class="radio"
+                                v-model="radio"
+                                :label="scope.row.supplierId"
+                                @change.native="getCurrentRow(scope.$index,scope.row)"
+                        >&nbsp;</el-radio>
+                    </template>
+                </el-table-column>
                 <!--<el-radio type="selection" header-align="center" align="center" width="50"> </el-radio>-->
                 <!--            <el-table-column prop="rowId" header-align="center" align="center" width="150" label="ID"></el-table-column>-->
                 <el-table-column
@@ -54,59 +51,38 @@
                         label="No"
                 ></el-table-column>
                 <el-table-column
+                        prop="supplierName"
                         header-align="center"
                         align="center"
-                        label="食品货号"
-                        prop="foodId">
-                </el-table-column>
-                <el-table-column
-                        header-align="center"
-                        align="center"
-                        label="食品名称"
-                        prop="foodName">
-                </el-table-column>
-                <el-table-column
-                        prop="foodPrice"
-                        header-align="center"
-                        align="center"
-                        label="食品单价"
+                        label="供应商名称"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="categoryName"
+                        prop="supplierPhone"
                         header-align="center"
                         align="center"
-                        label="食品类目"
+                        label="供应商联系方式"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="stockName"
+                        prop="supplierFzr"
                         header-align="center"
                         align="center"
-                        label="仓库"
+                        label="供应商负责人"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="shelfLife"
+                        prop="supplierAddress"
                         header-align="center"
                         align="center"
-                        label="保质期"
+                        label="供应商地址"
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="stock"
+                        prop="supplierNote"
                         header-align="center"
                         align="center"
-                        label="库存"
-                >
-                </el-table-column>
-                <el-table-column
-                        prop="foodDescription"
-                        header-align="center"
-                        align="center"
-                        show-overflow-tooltip
-                        label="食品描述"
-                >
+                        label="供应商简介">
                 </el-table-column>
             </el-table>
             <el-pagination
@@ -129,14 +105,11 @@
 
 <script>
     export default {
-        name: "FoodListAdd",
+        name: "SupplierChooseList",
         data() {
             return{
-                foodCategoryList:[],
                 dataForm: {
-                    foodName: "",
-                    foodCategory:"",
-                    stockName:""
+                    supplierName: ""
                 },
                 dialogVisible: false,
                 dataList: [],
@@ -151,21 +124,18 @@
         },
         methods:{
             init(){
-                // this.dataForm.csrname = "";
+                this.dataForm.supllierName = "";
                 this.dialogVisible = true;
                 this.getCasDataInfo();
-                this.getStatusList();
             },
             // 获取数据列表
             getCasDataInfo(){
                 this.dataListLoading = true;
                 this.$http({
-                    url: "/sale/foodList",
+                    url: "/supplier/list",
                     method: "get",
                     params: this.$http.adornParams({
-                        foodName:this.dataForm.foodName,
-                        categoryId:this.dataForm.foodCategory,
-                        stockName:this.dataForm.stockName,
+                        supplierName:this.dataForm.supplierName,
                         page: this.pageIndex,
                         size: this.pageSize,
                     })
@@ -181,30 +151,25 @@
                 });
             },
             //获取当前行
-            // getCurrentRow(index, row) {
-            //     console.log(row);
-            //     this.templateSelection = row;
-            // },
-            // 多选
-            selectionChangeHandle(val) {
-                this.dataListSelections = val;
+            getCurrentRow(index, row) {
+                this.templateSelection = row;
             },
             //确定提交
             sureCar(){
-                if (this.dataListSelections == "") {
+                if (this.templateSelection == "") {
                     this.$message({
                         type: "info",
-                        message: "请选择食品"
+                        message: "请选择供应商"
                     });
                     return;
                 }
-                var list = this.dataListSelections;
-                this.$emit("sureFood", list);
+                var obj = this.templateSelection;
+                this.$emit("sureStore", obj);
             },
-            // rowClick(row, event, column) {
-            //     this.radio = row.storeId;
-            //     this.getCurrentRow("", row);
-            // },
+            rowClick(row, event, column) {
+                this.radio = row.supplierId;
+                this.getCurrentRow("", row);
+            },
             // 每页数
             sizeChangeHandle(val) {
                 this.pageSize = val;
@@ -216,23 +181,7 @@
                 this.pageIndex = val;
                 this.getCasDataInfo();
             },
-            // 查询食品类目下拉列表
-            getStatusList() {
-                this.$http({
-                    url: "/foodCategory/list/foodCategoryName",
-                    method: "get",
-                    params: this.$http.adornParams()
-                }).then(({ data }) => {
-                    if (data && data.code === 0) {
-                        this.foodCategoryList = data.data
-                        this.foodCategoryList.unshift({
-                            label: "全部", value: ""
-                        })
-                    } else {
-                        this.foodCategoryList = [{ label: "全部", value: "" }];
-                    }
-                });
-            },
+
         },
     }
 </script>
@@ -242,5 +191,6 @@
         height: calc(100vh - 430px);
     }
 </style>
+
 
 

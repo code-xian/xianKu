@@ -15,9 +15,6 @@
             <el-form-item label="食品名称">
                 <el-input  placeholder="请输入食品名称" clearable v-model="dataForm.foodName"></el-input>
             </el-form-item>
-            <el-form-item label="发货仓库名称">
-                <el-input  placeholder="请输入发货仓库名称" clearable v-model="dataForm.stockName"></el-input>
-            </el-form-item>
             <el-form-item label="食品种类">
                 <el-select v-model="dataForm.foodCategory" clearable>
                     <el-option
@@ -66,10 +63,10 @@
                         prop="foodName">
                 </el-table-column>
                 <el-table-column
-                        prop="foodPrice"
+                        prop="purchasePrice"
                         header-align="center"
                         align="center"
-                        label="食品单价"
+                        label="食品进价"
                 >
                 </el-table-column>
                 <el-table-column
@@ -80,24 +77,10 @@
                 >
                 </el-table-column>
                 <el-table-column
-                        prop="stockName"
-                        header-align="center"
-                        align="center"
-                        label="仓库"
-                >
-                </el-table-column>
-                <el-table-column
                         prop="shelfLife"
                         header-align="center"
                         align="center"
                         label="保质期"
-                >
-                </el-table-column>
-                <el-table-column
-                        prop="stock"
-                        header-align="center"
-                        align="center"
-                        label="库存"
                 >
                 </el-table-column>
                 <el-table-column
@@ -160,12 +143,11 @@
             getCasDataInfo(){
                 this.dataListLoading = true;
                 this.$http({
-                    url: "/sale/foodList",
+                    url: "/purchase/foodList",
                     method: "get",
                     params: this.$http.adornParams({
                         foodName:this.dataForm.foodName,
                         categoryId:this.dataForm.foodCategory,
-                        stockName:this.dataForm.stockName,
                         page: this.pageIndex,
                         size: this.pageSize,
                     })

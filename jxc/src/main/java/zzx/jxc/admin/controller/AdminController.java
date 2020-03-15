@@ -24,8 +24,6 @@ public class AdminController {
     @CrossOrigin(origins = "*")
     @PostMapping("/login")
     public ResultVO login(@RequestBody Administrators administrators) {
-//        Administrators administrators1 = new Administrators();
-//        administrators1.setAdminName("阿松大");
         try {
             String adminUsername = administrators.getAdminUsername();
             Administrators administratorsByAdminUsername = adminService.findAdministratorsByAdminUsername(adminUsername);

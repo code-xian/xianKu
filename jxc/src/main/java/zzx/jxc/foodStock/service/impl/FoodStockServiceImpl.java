@@ -98,11 +98,21 @@ public class FoodStockServiceImpl implements FoodStockService {
             if (oneById == null) {
                 throw new SellException(ResultEnum.FOOD_NOT_EXIST);
             }
-            Integer foodStockNumber = foodStockDao.findStockByFoodIdAndStockId(orderCartDTO.getFoodId(), orderCartDTO.getStockId());
-            Integer result = foodStockNumber + orderCartDTO.getSaleQuantity();
-            FoodStock foodStockByFoodIdAndStockId = foodStockDao.findFoodStockByFoodIdAndStockId(orderCartDTO.getFoodId(), orderCartDTO.getStockId());
-            foodStockByFoodIdAndStockId.setStock(result);
-            foodStockDao.save(foodStockByFoodIdAndStockId);
+            FoodStock foodStockByFoodIdAndStockId1 = foodStockDao.findFoodStockByFoodIdAndStockId(orderCartDTO.getFoodId(), orderCartDTO.getStockId());
+            if (foodStockByFoodIdAndStockId1 == null) {
+                FoodStock foodStock = new FoodStock();
+                foodStock.setFoodId(orderCartDTO.getFoodId());
+                foodStock.setStockId(orderCartDTO.getStockId());
+                foodStock.setStock(orderCartDTO.getSaleQuantity());
+                foodStockDao.save(foodStock);
+            }else{
+                Integer foodStockNumber = foodStockDao.findStockByFoodIdAndStockId(orderCartDTO.getFoodId(), orderCartDTO.getStockId());
+                Integer result = foodStockNumber + orderCartDTO.getSaleQuantity();
+                FoodStock foodStockByFoodIdAndStockId = foodStockDao.findFoodStockByFoodIdAndStockId(orderCartDTO.getFoodId(), orderCartDTO.getStockId());
+                foodStockByFoodIdAndStockId.setStock(result);
+                foodStockDao.save(foodStockByFoodIdAndStockId);
+            }
+
         }
     }
 
