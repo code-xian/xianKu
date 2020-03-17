@@ -155,7 +155,6 @@
                         <el-table-column
                                 header-align="center"
                                 align="center"
-                                prop="saleQuantity"
                                 width="300"
                                 label="数量">
                             <template slot-scope="scope">
@@ -306,7 +305,6 @@
                 this.$refs['dataForm'].validate(valid => {
                     if (valid) {
                         if (this.dataList == "") {
-                            console.log("sss",this.dataList);
                             this.$message({
                                 type: "info",
                                 message: "请添加供应的食品"

@@ -291,7 +291,6 @@
                 this.$refs['dataForm'].validate(valid => {
                     if (valid) {
                         if (this.dataList == "") {
-                            console.log("sss",this.dataList);
                             this.$message({
                                 type: "info",
                                 message: "请添加供应的食品"

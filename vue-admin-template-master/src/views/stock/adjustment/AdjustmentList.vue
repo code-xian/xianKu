@@ -79,12 +79,12 @@
         <adjustment-overview
                 v-if="adjustmentOverviewVisible"
                 ref="adjustmentOverview"
-                @refreshDataList="getDataList"
+                @refreshDataList="init"
         ></adjustment-overview>
         <stock-add
                 v-if="addVisible"
                 ref="add"
-                @refreshDataList="getDataList"
+                @refreshDataList="init"
         ></stock-add>
     </div>
 </template>
@@ -120,12 +120,12 @@
         },
         mounted() {
             this.init();
-            this.getStatusList()
         },
         methods: {
             init () {
                 this.pageIndex=1;
-                this.getDataList()
+                this.getDataList();
+                this.getStatusList();
             },
             // 获取数据列表
             getDataList() {
@@ -228,7 +228,6 @@
                     params: this.$http.adornParams()
                 }).then(({ data }) => {
                     if (data && data.code === 0) {
-                        console.log(data.data);
                         for (let i = 0; i < data.data.length; i++) {
                             this.stockTypeList.push(
                                data.data[i]

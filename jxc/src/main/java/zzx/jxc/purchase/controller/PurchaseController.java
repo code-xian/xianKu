@@ -107,7 +107,6 @@ public class PurchaseController {
             Object list1 = params.get("list");
             List<OrderCartDTO> orderCartDTOS = new ArrayList<OrderCartDTO>();
             String s = gson.toJson(list1);
-            //特殊符号 需要replace
             orderCartDTOS = gson.fromJson(s, new TypeToken<List<OrderCartDTO>>() {
             }.getType());
 

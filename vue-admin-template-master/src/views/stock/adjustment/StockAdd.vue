@@ -1,10 +1,8 @@
 <template>
     <el-dialog
             :title="!dataForm.id ? '新增' : '修改'"
-            :close-on-click-modal="false"
             :visible.sync="visible"
-            :fullscreen="true"
-            :modal="false"
+            :modal="true"
     >
         <el-form
                 :model="dataForm"
@@ -14,84 +12,54 @@
         >
 
 
-
-            <el-form-item label="规则分类" prop="ruleType"
+            <el-form-item label="仓库名称" prop="stockName"
                           :rules="[
-      { required: true, message: '规则分类不能为空', trigger: 'blur'},
+      { required: true, message: '仓库名称不能为空', trigger: 'blur'},
     ]"
                           style="position:relative;left:50%;margin-left:-250px;width: 500px"
             >
-                <el-select v-model="dataForm.ruleType" placeholder="请选择">
-                    <el-option
-                            v-for="item in ruleTypeList"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                    ></el-option>
-                </el-select>
+                <el-input v-model="dataForm.stockName" placeholder="仓库名称"></el-input>
 
             </el-form-item>
-            <el-form-item label="数据来源" prop="dataSource"
+            <el-form-item label="仓库负责人"
+                          prop="stockFzr"
                           :rules="[
-      { required: true, message: '数据来源不能为空', trigger: 'blur'},
-    ]"
+                            { required: true, message: '仓库负责人不能为空', trigger: 'blur'},
+                          ]"
                           style="position:relative;left:50%;margin-left:-250px;width: 500px"
             >
 
                 <el-input
-                        placeholder="数据来源"
-                        v-model="dataForm.dataSource"
+                        placeholder="仓库负责人"
+                        v-model="dataForm.stockFzr"
                 ></el-input>
 
             </el-form-item>
-            <el-form-item label="规则" prop="creditRule"
+            <el-form-item label="仓库类型" prop="stockType"
                           :rules="[
-      { required: true, message: '规则不能为空', trigger: 'blur'},
+      { required: true, message: '仓库类型不能为空', trigger: 'blur'},
     ]"
                           style="position:relative;left:50%;margin-left:-250px;width: 500px"
             >
 
                 <el-input
 
-                        placeholder="标签规则"
-                        v-model="dataForm.creditRule"
+                        placeholder="仓库类型"
+                        v-model="dataForm.stockType"
                 ></el-input>
 
             </el-form-item>
 
-            <el-form-item label="备注" prop="beizhu"
+            <el-form-item label="仓库描述" prop="stockNote"
                           :rules="[
-      { required: true, message: '备注不能为空', trigger: 'blur'},
+      { required: true, message: '仓库描述不能为空', trigger: 'blur'},
     ]"
                           style="position:relative;left:50%;margin-left:-250px;width: 500px"
             >
                 <el-input
-                        placeholder="备注"
-                        v-model="dataForm.beizhu"
+                        placeholder="仓库描述"
+                        v-model="dataForm.stockNote"
                 ></el-input>
-            </el-form-item>
-            <el-form-item label="运算逻辑" prop="yunsuanluoji"
-                          :rules="[
-      { required: true, message: '运算逻辑不能为空', trigger: 'blur'},
-    ]"
-                          style="position:relative;left:50%;margin-left:-250px;width: 500px"
-            >
-
-                <el-input
-
-                        placeholder="运算逻辑"
-                        v-model="dataForm.yunsuanluoji"
-                ></el-input>
-            </el-form-item>
-
-            <el-form-item label="评分" prop="pingfen"
-                          :rules="[
-      { required: true, message: '评分不能为空', trigger: 'blur'},
-    ]"
-                          style="position:relative;left:50%;margin-left:-250px;width: 500px"
-            >
-
-                <el-input-number v-model="dataForm.pingfen"></el-input-number>
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -104,54 +72,43 @@
 <script>
 
     export default {
-        data () {
+        data() {
             return {
                 visible: false,
                 dataFormSubmitDisabled: false,
                 dataForm: {
-                    id: '',
-                    ruleType: '',
-                    dataSource: '',
-                    creditRule: '',
-                    beizhu: '',
-                    yunsuanluoji:"",
-                    pingfen:0
+                    stockFzr: "",
+                    stockType: "",
+                    stockName: "",
+                    stockNote: "",
                 },
-                ruleTypeList: [
-                    {label: '全部', value: ''},
-                ],
-                dataRule: {},
             }
         },
         methods: {
-            init () {
-                this.visible = true
+            init() {
+                this.visible = true;
+                this.dataFormSubmitDisabled = false
                 this.$nextTick(() => {
                     this.$refs.dataForm.resetFields();
                 });
             },
             // 表单提交
-            dataFormSubmit () {
+            dataFormSubmit() {
                 this.$refs['dataForm'].validate(valid => {
                     if (valid) {
                         this.dataFormSubmitDisabled = true
                         this.$http({
-                            url: this.$http.adornUrl(
-                                `/kehuxinyongguanli/creditrules/${!this.dataForm.id ? 'save' : 'update'}`
-                            ),
+                            url: "/stock/save",
                             method: 'post',
                             data: this.$http.adornData({
-                                creditRulesId:this.dataForm.id,
-                                grade: this.dataForm.pingfen,
-                                ruleName: this.dataForm.creditRule,
-                                remark: this.dataForm.beizhu,
-                                dataSources: this.dataForm.dataSource,
-                                ruleClassify: this.dataForm.ruleType,
-                                arithmeticLogic: this.dataForm.yunsuanluoji,
+                                stockName:this.dataForm.stockName,
+                                stockType:this.dataForm.stockType,
+                                stockFzr:this.dataForm.stockFzr,
+                                stockNote:this.dataForm.stockNote,
+                                stockStatus:0,
                             })
                         }).then(({data}) => {
                             if (data && data.code === 0) {
-                                this.dataFormSubmitDisabled = false
                                 this.$message({
                                     message: '操作成功',
                                     type: 'success',
@@ -169,29 +126,7 @@
                     }
                 })
             },
-            // 查询标签分类下拉列表
-            getTagsList() {
-                this.$http({
-                    url: this.$http.adornUrl("/kehuxinyongguanli/creditrules/selectClassify"),
-                    method: "get",
-                    params: this.$http.adornParams()
-                }).then(({ data }) => {
-                    if (data && data.code === 0) {
-                        for (let i = 0; i < data.data.length; i++) {
-                            this.ruleTypeList.push({
-                                value: data.data[i].id,
-                                label: data.data[i].des
-                            })
-                        }
-                    } else {
-                        this.ruleTypeList = [{ label: "全部", value: "" }];
-                    }
-                });
-            },
         },
-        created () {
-            this.getTagsList()
-        }
     }
 </script>
 <style scoped lang="scss">

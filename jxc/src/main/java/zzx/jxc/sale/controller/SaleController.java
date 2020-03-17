@@ -114,7 +114,6 @@ public class SaleController {
             //特殊符号 需要replace
             orderCartDTOS = gson.fromJson(s, new TypeToken<List<OrderCartDTO>>() {
             }.getType());
-
             saleOrderDTO.setSaleDetailList(orderCartDTOS);
             if (params.get("orderStatus").equals(0)) {     //0 审核通过    1审核不通过
                 saleService.finish(saleOrderDTO);
