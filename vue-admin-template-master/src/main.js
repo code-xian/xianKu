@@ -16,9 +16,9 @@ import moment from 'moment'
 
 // require('./mock/mock.js')
 Vue.config.productionTip = false
-Vue.use(iView)
-Vue.use(ElementUI)
-Vue.use(VueCookie)
+Vue.use(iView);
+Vue.use(ElementUI);
+Vue.use(VueCookie);
 Vue.config.devtools = true
 
 

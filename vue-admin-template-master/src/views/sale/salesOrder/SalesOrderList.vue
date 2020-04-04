@@ -207,6 +207,7 @@
             init() {
                 this.pageIndex = 1;
                 this.getDataList();
+                // this.getDataList2();
             },
             getDataList() {
                 this.dataListLoading = true;
@@ -231,6 +232,27 @@
                     this.dataListLoading = false;
                 });
             },
+            // getDataList2() {     //todo
+            //     this.$socket.emit('push_event',this.typeList)
+            //     this.dataListLoading = true;
+            //     this.$http({
+            //         url: "/socket/send",
+            //         method: "get",
+            //         params: this.$http.adornParams({
+            //             loginUser:"linzf",
+            //             content:"1231"
+            //         })
+            //     }).then(({ data }) => {
+            //         if (data && data.code === 0) {
+            //             this.dataList=data.data.content;
+            //             this.totalPage=data.data.totalElements;
+            //         } else {
+            //             this.dataList = [];
+            //             this.totalPage = 0;
+            //         }
+            //         this.dataListLoading = false;
+            //     });
+            // },
             audit(id,flag,purchaseAmount) {
                 this.auditVisible=true;
                 this.$nextTick(()=>{

@@ -153,8 +153,8 @@
                     })
                 }).then(({ data }) => {
                     if (data && data.code === 0) {
-                        this.dataList=data.data.content;
-                        this.totalPage=data.data.totalElements;
+                        this.dataList=data.data.pageList;
+                        this.totalPage=data.data.nrOfElements;
                     } else {
                         this.dataList = [];
                         this.totalPage = 0;

@@ -255,7 +255,7 @@
                 columns.forEach((column, index) => {
                     if (index === 0) {
                         sums[index] = '总计'
-                    } else if ( index === 6|| index === 3) {
+                    } else if ( index === 4|| index === 3) {
                         const values = data.map(item => Number(item[column.property]))
                         if (!values.every(value => isNaN(value))) {
                             sums[index] = values.reduce((prev, curr) => {

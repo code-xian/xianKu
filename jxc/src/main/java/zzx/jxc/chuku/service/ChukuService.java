@@ -24,4 +24,7 @@ public interface ChukuService {
 
     //订单通过审核
     void finish(String chukuId);
+
+    //生成日志
+    void createLog(String rukuId);
 }

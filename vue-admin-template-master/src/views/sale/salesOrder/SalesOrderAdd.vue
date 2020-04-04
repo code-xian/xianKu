@@ -216,7 +216,7 @@
               <el-button type="primary" @click="dataFormSubmit()" :disabled="dataFormSubmitDisabled">确 定</el-button>
          </span>
         <sale-store-choose-list v-if="storeListDialogVisible" ref="storeListDialog" @sureStore="sureStore"></sale-store-choose-list>
-        <food-list-add v-if="foodListDialogVisible" ref="foodListDialog" @sureFood="sureFood"></food-list-add>
+        <food-list-add v-if="foodListDialogVisible" ref="foodListDialog" @sureFood="sureFood" :sureFood="dataList"></food-list-add>
     </el-dialog>
 </template>
 
@@ -344,7 +344,24 @@
             //确定食品
             sureFood(list) {
                 this.foodListDialogVisible = false;
-                this.dataList = list
+                // this.dataList.concat(list);
+                // for (let i = 0; i < this.dataList.length; i++) {
+                //     for (let j = 0; j < list.length; j++)
+                //     {
+                //         //判断添加的数组是否为空了
+                //         if (this.dataList.length > 0) {
+                //             if (this.dataList[i]["NAME"] === list[j]["NAME"]) {
+                //                 jsonArr.splice(i, 1); //利用splice函数删除元素，从第i个位置，截取长度为1的元素
+                //                 length1--;
+                //                 console.log(jsonArr2[j]);//重复元素
+                //             }
+                //         }
+                //     }
+                //
+                // }
+                for (let n = 0; n < list.length; n++) {
+                    this.dataList.push(list[n]);
+                }
                 this.$nextTick(() => {
                     this.dataList.forEach(item => {
                             this.$refs.table.toggleRowSelection(item, true)

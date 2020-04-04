@@ -3,6 +3,7 @@ package zzx.jxc.purchase.service.impl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -75,6 +76,5 @@ class PurchaseServiceImplTest {
 
     @Test
     void findListAll() {
-        Page<PurchaseFoodSelectListVO> listAll = purchaseService.findListAll(PageRequest.of(1, 5), "", "");
     }
 }

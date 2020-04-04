@@ -67,7 +67,7 @@ public class FoodStockServiceImpl implements FoodStockService {
             foodStockVOS.add(foodStockVO);
         }
         int size = foodStockVOS.size();
-        Page<FoodStockVO> foodStockVOPage = new PageImpl<FoodStockVO>(foodStockVOS,pageable,size);
+        Page<FoodStockVO> foodStockVOPage = new PageImpl<FoodStockVO>(foodStockVOS,pageable,size);  //todo
         return foodStockVOPage;
     }
 
@@ -116,9 +116,6 @@ public class FoodStockServiceImpl implements FoodStockService {
         }
     }
 
-    @Override
-    public void stockChange(List<OrderCartDTO> cartDTOList) {
 
-    }
 
 }

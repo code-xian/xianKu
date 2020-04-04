@@ -2,7 +2,11 @@ package zzx.jxc.purchase.service.impl;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.beans.support.PagedListHolder;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zzx.jxc.VO.PurchaseFoodSelectListVO;
@@ -174,7 +178,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public Page<PurchaseFoodSelectListVO> findListAll(Pageable pageable, String categoryId, String foodName) {
+    public PagedListHolder findListAll(Pageable pageable, String categoryId, String foodName) {
         FoodInfo foodInfo = new FoodInfo();
         foodInfo.setCategoryId(categoryId);
         foodInfo.setFoodName(foodName);
@@ -193,9 +197,9 @@ public class PurchaseServiceImpl implements PurchaseService {
             purchaseFoodSelectListVO.setCategoryName(foodCategoryByCategoryId.getCategoryName());
             purchaseFoodSelectListVOS.add(purchaseFoodSelectListVO);
         }
-        int size = purchaseFoodSelectListVOS.size();
-
-        Page<PurchaseFoodSelectListVO> allList = new PageImpl<PurchaseFoodSelectListVO>(purchaseFoodSelectListVOS, pageable, size);
-        return allList;
+        PagedListHolder<PurchaseFoodSelectListVO> pagedList = new PagedListHolder<>(purchaseFoodSelectListVOS);
+        pagedList.setPage(pageable.getPageNumber());
+        pagedList.setPageSize(pageable.getPageSize());
+        return pagedList;
     }
 }

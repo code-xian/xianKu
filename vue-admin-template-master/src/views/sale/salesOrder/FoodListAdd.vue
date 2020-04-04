@@ -109,16 +109,21 @@
                 >
                 </el-table-column>
             </el-table>
-            <el-pagination
-                    style="float:right;margin-top: 5px;"
-                    @size-change="sizeChangeHandle"
-                    @current-change="currentChangeHandle"
-                    :current-page="pageIndex"
-                    :page-sizes="[10, 20, 50, 100]"
-                    :page-size="pageSize"
-                    :total="totalPage"
-                    layout="total, sizes, prev, pager, next, jumper"
-            ></el-pagination>
+            <div style="
+                float: right;color: gray;
+                font-size: 15px;
+                padding: 17px;"
+            >共{{this.totalPage}}条</div>
+<!--            <el-pagination-->
+<!--                    style="float:right;margin-top: 5px;"-->
+<!--                    @size-change="sizeChangeHandle"-->
+<!--                    @current-change="currentChangeHandle"-->
+<!--                    :current-page="pageIndex"-->
+<!--                    :page-sizes="[10, 20, 50, 100]"-->
+<!--                    :page-size="pageSize"-->
+<!--                    :total="totalPage"-->
+<!--                    layout="total, sizes, prev, pager, next, jumper"-->
+<!--            ></el-pagination>-->
         </div>
         <span slot="footer" class="dialog-footer">
       <el-button @click="dialogVisible = false">关 闭</el-button>
@@ -128,6 +133,7 @@
 </template>
 
 <script>
+    import {deepCompare} from "../../../utils/ObjectCompare"
     export default {
         name: "FoodListAdd",
         data() {
@@ -146,8 +152,11 @@
                 dataListLoading: false,
                 dataListSelections: [],
                 radio: "",
-                templateSelection: ""
+                templateSelection: "",
             }
+        },
+        props:{
+            sureFood: Array,
         },
         methods:{
             init(){
@@ -155,6 +164,7 @@
                 this.dialogVisible = true;
                 this.getCasDataInfo();
                 this.getStatusList();
+                console.log("被选的食品1",this.sureFood);
             },
             // 获取数据列表
             getCasDataInfo(){
@@ -170,9 +180,27 @@
                         size: this.pageSize,
                     })
                 }).then(({ data }) => {
+                    // console.log(JSON.stringify(this.sureFood));
+                    // console.log(JSON.stringify(data.data.content));
                     if (data && data.code === 0) {
-                        this.dataList=data.data.content;
-                        this.totalPage=data.data.totalElements;
+                        if (this.sureFood != '') {
+                            // this.dataList = data.data.content.filter((item, index) => {
+                            //     return (this.sureFood.some(f=>(f.stockId !== item.stockId)))
+                            //
+                            // });
+                             for(var i =0 ; i<this.sureFood.length;i++){
+                                 for (var j = 0; j < data.data.content.length; j++) {
+                                     // console.log(deepCompare(this.sureFood[i], data.data.content[j]));
+                                     if (this.sureFood[i].stockId == data.data.content[j].stockId&&this.sureFood[i].foodId == data.data.content[j].foodId) {
+                                         data.data.content.splice(j,1)
+                                     }
+                                     this.dataList = data.data.content
+                                 }
+                             }
+                        }else{
+                            this.dataList=data.data.content;
+                        }
+                        this.totalPage=this.dataList.length;
                     } else {
                         this.dataList = [];
                         this.totalPage = 0;
@@ -198,7 +226,9 @@
                     });
                     return;
                 }
+                console.log("被选的食品2",this.sureFood);
                 var list = this.dataListSelections;
+
                 this.$emit("sureFood", list);
             },
             // rowClick(row, event, column) {

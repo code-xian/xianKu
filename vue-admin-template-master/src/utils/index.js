@@ -46,6 +46,7 @@ export function resetTokenAndClearUser() {
     // localStorage.setItem('token', '')
     // localStorage.setItem('userImg', '')
     // localStorage.setItem('userName', '')
+
     Vue.cookie.delete('token')
     // 重设路由
     resetRouter()
@@ -74,4 +75,27 @@ export function getCookie(name) {
         return null;
 }
 
+//获取当前时间
+export  function getCurrentDate(){
+    var myDate = new Date();
+    //var year = myDate.getYear();        //获取当前年份(2位)
+    var year = myDate.getFullYear();    //获取完整的年份(4位,1970-????)
+    var month = myDate.getMonth()+1;       //获取当前月份(0-11,0代表1月)
+    var day = myDate.getDate();        //获取当前日(1-31)
+    var hour = myDate.getHours();
+    var minutes = myDate.getMinutes();
+    if(parseInt(month)<10){
+        month = "0"+""+month;
+    }
+    if(parseInt(day)<10){
+        day = "0"+""+day;
+    }
+    if(parseInt(hour)<10){
+        hour = "0"+""+hour;
+    }
+    if(parseInt(minutes)<10){
+        minutes = "0"+""+minutes;
+    }
+    return year+"-"+month+"-"+day+" "+hour+":"+minutes;
+}
 

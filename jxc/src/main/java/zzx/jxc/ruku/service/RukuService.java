@@ -24,4 +24,7 @@ public interface RukuService {
 
     //订单通过审核
     void finish(String rukuId);
+
+    //生成日志
+    void createLog(String rukuId);
 }

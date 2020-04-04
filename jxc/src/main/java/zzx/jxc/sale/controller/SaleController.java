@@ -6,10 +6,12 @@ import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import zzx.jxc.VO.ResultVO;
 import zzx.jxc.VO.SaleFoodSelectListVO;
 import zzx.jxc.VO.SaleOrderInfoVO;
+import zzx.jxc.config.service.SocketIoService;
 import zzx.jxc.dto.OrderCartDTO;
 import zzx.jxc.dto.SaleOrderDTO;
 import zzx.jxc.sale.entity.SaleMaster;
@@ -26,7 +28,8 @@ public class SaleController {
 
     @Autowired
     private SaleService saleService;
-
+    @Autowired
+    private SocketIoService socketIoService;
 
     //查询库存食品添加列表
     @GetMapping("/foodList")
@@ -72,7 +75,7 @@ public class SaleController {
                              @RequestParam Integer size
                              ){
         try {
-            PageRequest pageRequest = PageRequest.of(page-1, size);
+            PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.DESC, "createTime"));
             SaleMaster saleMaster = new SaleMaster();
             saleMaster.setSaleId(saleId);
             saleMaster.setStoreName(storeName);
@@ -82,8 +85,10 @@ public class SaleController {
                 saleMaster.setSaleStatus(orderStatus);
             }
             Page<SaleMaster> saleMasterList = saleService.findList(saleMaster, pageRequest);
+//            socketIoService.pushMessageToUser(new PushMessage("ssss", "123123", "content"));
             return ResultVOUtil.success(saleMasterList, "ok");
         } catch (Exception e) {
+            e.printStackTrace();
             return ResultVOUtil.error(1,"查询供应订单列表错误");
         }
     }

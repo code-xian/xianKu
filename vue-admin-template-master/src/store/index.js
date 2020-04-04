@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import user from './user'
+import msg from './msg'
 
 Vue.use(Vuex)
 
@@ -89,10 +90,6 @@ const store = new Vuex.Store({
                         text: '食品大全'
                     },{
                         type: 'ios-grid',
-                        name: 'transferList',
-                        text: '移库管理'
-                    },{
-                        type: 'ios-grid',
                         name: 'log',
                         text: '库存日志'
                     },
@@ -139,7 +136,12 @@ const store = new Vuex.Store({
                         type: 'md-person',
                         name:'msg',
                         text:'通知公告'
-                    }
+                    },
+                    {
+                        type: 'md-person',
+                        name:'orderAmount',
+                        text:'供应/采购统计'
+                    },
                 ]
             },
             {
@@ -197,7 +199,8 @@ const store = new Vuex.Store({
         }
     },
     modules:{
-        user
+        user,
+        msg
     }
 })
 

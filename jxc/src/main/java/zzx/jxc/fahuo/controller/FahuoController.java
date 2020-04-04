@@ -3,6 +3,7 @@ package zzx.jxc.fahuo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import zzx.jxc.VO.FahuoOrderInfoVO;
 import zzx.jxc.VO.ResultVO;
@@ -42,7 +43,7 @@ public class FahuoController {
                              @RequestParam Integer size
     ){
         try {
-            PageRequest pageRequest = PageRequest.of(page-1, size);
+            PageRequest pageRequest = PageRequest.of(page-1, size, Sort.by(Sort.Direction.DESC, "createTime"));
             FahuoMaster fahuoMaster = new FahuoMaster();
             fahuoMaster.setFahuoId(fahuoId);
             fahuoMaster.setStoreName(storeName);

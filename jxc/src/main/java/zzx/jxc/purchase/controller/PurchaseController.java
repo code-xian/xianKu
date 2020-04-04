@@ -3,8 +3,10 @@ package zzx.jxc.purchase.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import zzx.jxc.VO.PurchaseFoodSelectListVO;
 import zzx.jxc.VO.PurchaseOrderInfoVO;
@@ -36,7 +38,7 @@ public class PurchaseController {
             if(categoryId.equals("")||categoryId.isEmpty()){
                 categoryId = "";
             }
-            Page<PurchaseFoodSelectListVO> all = purchaseService.findListAll(pageRequest, categoryId,foodName);
+            PagedListHolder<PurchaseFoodSelectListVO> all = purchaseService.findListAll(pageRequest, categoryId,foodName);
             return ResultVOUtil.success(all, "ok");
         } catch (Exception e) {
             e.printStackTrace();
@@ -68,7 +70,7 @@ public class PurchaseController {
                              @RequestParam Integer size
     ){
         try {
-            PageRequest pageRequest = PageRequest.of(page-1, size);
+            PageRequest pageRequest = PageRequest.of(page-1, size, Sort.by(Sort.Direction.DESC, "createTime"));
             PurchaseMaster purchaseMaster = new PurchaseMaster();
             purchaseMaster.setPurchaseId(purchaseId);
             purchaseMaster.setSupplierName(supplierName);

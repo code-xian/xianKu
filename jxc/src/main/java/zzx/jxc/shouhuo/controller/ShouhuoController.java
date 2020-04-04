@@ -3,6 +3,7 @@ package zzx.jxc.shouhuo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import zzx.jxc.VO.ResultVO;
 import zzx.jxc.VO.ShouhuoOrderInfoVO;
@@ -42,7 +43,7 @@ public class ShouhuoController {
                              @RequestParam Integer size
     ){
         try {
-            PageRequest pageRequest = PageRequest.of(page-1, size);
+            PageRequest pageRequest = PageRequest.of(page-1, size, Sort.by(Sort.Direction.DESC, "createTime"));
             ShouhuoMaster shouhuoMaster = new ShouhuoMaster();
             shouhuoMaster.setShouhuoId(shouhuoId);
             shouhuoMaster.setSupplierName(supplierName);

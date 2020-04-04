@@ -21,4 +21,5 @@ public interface StockService {
     Stock findOneById(String id);
 
     long count();
+
 }

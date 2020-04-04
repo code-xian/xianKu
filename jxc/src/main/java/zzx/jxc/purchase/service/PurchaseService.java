@@ -1,11 +1,12 @@
 package zzx.jxc.purchase.service;
 
+import org.springframework.beans.support.PagedListHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import zzx.jxc.VO.PurchaseFoodSelectListVO;
 import zzx.jxc.VO.PurchaseOrderInfoVO;
 import zzx.jxc.dto.PurchaseOrderDTO;
 import zzx.jxc.purchase.entity.PurchaseMaster;
+
 public interface PurchaseService {
     //查询今日的订单数,以便添加订单编号
     Integer countByPurchaseIdLike();
@@ -26,5 +27,5 @@ public interface PurchaseService {
     PurchaseOrderDTO finish(PurchaseOrderDTO purchaseOrderDTO);
 
     //查询食品列表
-    Page<PurchaseFoodSelectListVO> findListAll( Pageable pageable, String categoryId, String foodName);
+    PagedListHolder findListAll(Pageable pageable, String categoryId, String foodName);
 }

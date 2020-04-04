@@ -24,7 +24,10 @@ import zzx.jxc.fahuo.dao.FahuoDetailDao;
 import zzx.jxc.fahuo.entity.FahuoDetail;
 import zzx.jxc.fahuo.entity.FahuoMaster;
 import zzx.jxc.fahuo.service.FahuoService;
+import zzx.jxc.foodStock.Dao.FoodStockDao;
 import zzx.jxc.foodStock.service.FoodStockService;
+import zzx.jxc.stockLog.Dao.LogDao;
+import zzx.jxc.stockLog.entity.StockLog;
 import zzx.jxc.util.DetailKeyUtil;
 import zzx.jxc.util.ddbhUtil;
 
@@ -50,6 +53,10 @@ public class ChukuServiceImpl implements ChukuService {
     private FahuoService fahuoService;
     @Autowired
     private FoodStockService foodStockService;
+    @Autowired
+    private FoodStockDao foodStockDao;
+    @Autowired
+    private LogDao logDao;
     @Override
     public Integer countByChukuIdLike() {
         Date date=new Date();
@@ -152,6 +159,25 @@ public class ChukuServiceImpl implements ChukuService {
         ChukuMaster save = chukuDao.save(chukuMasterByChukuId);
         if (save == null) {
             throw new SellException(ResultEnum.ORDER_AUDIT_FAIL);
+        }
+        createLog(chukuId);
+    }
+
+    @Override
+    public void createLog(String chukuId) {
+        ChukuOrderInfoVO one = findOne(chukuId);
+        for (ChukuDetail chukuDetail : one.getDetailList()) {
+            StockLog stockLog = new StockLog();
+            stockLog.setFoodName(chukuDetail.getFoodName());
+            stockLog.setFoodId(chukuDetail.getFoodId());
+            stockLog.setStockId(chukuDetail.getStockId());
+            stockLog.setStockName(chukuDetail.getStockName());
+            stockLog.setDocumentNumber(chukuId);
+            stockLog.setDocumentType(2);
+            stockLog.setIncOrDec("减少");
+            stockLog.setQuantity(chukuDetail.getFoodQuantity());
+            stockLog.setRestStock(foodStockDao.findStockByFoodIdAndStockId(chukuDetail.getFoodId(), chukuDetail.getStockId()));
+            logDao.save(stockLog);
         }
     }
 }

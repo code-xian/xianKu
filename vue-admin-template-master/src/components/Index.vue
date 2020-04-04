@@ -127,9 +127,11 @@
 </template>
 
 <script>
-import { resetTokenAndClearUser } from '../utils'
+    import * as io from "socket.io-client";
+    import {resetTokenAndClearUser} from '../utils'
+    let socket = null;
+    export default {
 
-export default {
     name: 'index',
     data () {
         return {
@@ -157,6 +159,10 @@ export default {
             crumbs: '主页',
             userName: '',
             userImg: '',
+            socket: null,
+            userName2:this.$cookie.get("adminUsername"),
+            messageList:[], //消息栏
+            messageCount:0,
         }
     },
     // created() {
@@ -190,9 +196,27 @@ export default {
     //     })
     // },
     created() {
+
         this.getUserInfo();
     },
+    // initSocket() {
+    //     this.socket = io.connect("http:/localhost:9099");
+    //     this.socket.on("connect", (data) => {
+    //         console.log("open:", data);
+    //         const loginUser = {
+    //             loginUser: this.$cookie.get("adminUsername"), //获取登录缓存的用户
+    //         };
+    //         console.log("loginUser:", loginUser);
+    //         if (this.$cookie.get("adminUsername") !== null) {
+    //             this.socket.emit("addUser", loginUser); //推送用户账号给后端socket
+    //         }
+    //     })
+    // },
     mounted() {
+
+        this.getDataList2();
+        // this.initSocket();
+        this.initSocketio();
         this.$nextTick(()=>{
             // 第一个标签
             const name = this.$route.name
@@ -351,7 +375,7 @@ export default {
         },
         // 用户操作
         userOperate(name) {
-            switch(name) {
+            switch (name) {
                 case '1':
                     // 修改密码
                     this.gotoPage('password')
@@ -362,6 +386,7 @@ export default {
                     break
                 case '3':
                     resetTokenAndClearUser()
+                    this.quitSocket()
                     this.$router.replace({name: 'login'})
                     break
             }
@@ -373,7 +398,7 @@ export default {
         },
         // 判断
         isShrinkAside() {
-            this.isShowAsideTitle? this.shrinkAside() : this.expandAside()
+            this.isShowAsideTitle ? this.shrinkAside() : this.expandAside()
         },
         // 收缩
         shrinkAside() {
@@ -487,7 +512,7 @@ export default {
             const self = this
             this.$Notice.info({
                 title: `您有${this.msgNum}条消息`,
-                name:'notice',
+                name: 'notice',
                 render(h) {
                     return h('Button', {
                         attrs: {
@@ -516,21 +541,21 @@ export default {
         processNameToTitle(obj, data, text) {
             if (data.name) {
                 obj[data.name] = data.text
-                this.paths[data.name] = text? `${text} / ${data.text}` : data.text
+                this.paths[data.name] = text ? `${text} / ${data.text}` : data.text
             }
             if (data.children) {
                 data.children.forEach(e => {
-                    this.processNameToTitle(obj, e, text? `${text} / ${data.text}` : data.text)
+                    this.processNameToTitle(obj, e, text ? `${text} / ${data.text}` : data.text)
                 })
             }
         },
         // 获取当前管理员信息
-        getUserInfo () {
+        getUserInfo() {
             this.$http({
                 url: '/admin/query',
                 method: 'get',
                 params: this.$http.adornParams({
-                    adminUsername:this.$cookie.get("adminUsername")
+                    adminUsername: this.$cookie.get("adminUsername")
                 })
             }).then((res) => {
                 if (res && res.data.code == 0) {
@@ -539,12 +564,87 @@ export default {
                     this.adminUsername = res.data.data.adminUsername
                     this.adminAuthority = res.data.data.adminAuthority
 
-                }else{
+                } else {
                     this.$message.error(res.data.msg)
                 }
             })
+        },
+        //     initWebSocket () {
+        //         if(typeof(WebSocket) === "undefined"){
+        //             alert("您的浏览器不支持socket")
+        //         }else{
+        //             // 实例化socket
+        //             this.socket = new WebSocket("ws://localhost:8091/jxc/websocket")
+        //             // 监听socket连接
+        //             this.socket.onopen = this.open
+        //             // 监听socket错误信息
+        //             this.socket.onerror = this.error
+        //             // 监听socket消息
+        //             this.socket.onmessage = this.getMessage
+        //         }
+        //     },
+        //     open: function () {
+        //         console.log("socket连接成功")
+        //     },
+        //     error: function () {
+        //         console.log("连接错误")
+        //     },
+        //     getMessage: function (msg) {
+        //         console.log(msg.data)
+        //     },
+        //     send: function () {
+        //         this.socket.send(params)
+        //     },
+        //     close: function () {
+        //         console.log("socket已经关闭")
+        //     },
+        // },
+        getDataList2() {
+            this.$http({
+                url: "/socket/sendBroadcast",
+                method: "get",
+                params: this.$http.adornParams({
+
+                })
+            }).then(({ data }) => {
+                if (data && data.code === 0) {
+
+                } else {
+
+                }
+            });
+        },
+        pushMessage(data) {
+            this.$store.dispatch('msg/push_message', data)
+            console.log(this.$store.state.msg.message);
+            console.log(this.$store.state.msg.rowCount);
+        },
+        initSocketio() {
+            socket = io.connect('http://localhost:9099', {
+                query: 'loginUser='+this.userName2
+            })
+            socket.on('connect', () =>{
+                console.log('连接成功')
+            })
+            // 接收后端发送过来的消息
+            socket.on('push_event', data =>{
+                console.log(data)
+            })
+            // 接收后端发送过来的消息
+            socket.on('stock', data => {
+                console.log(data)
+                // this.$store.dispatch('msg/add_rowCount')
+                this.pushMessage(data)
+                socket.emit("stock", "你好")
+            })
+            socket.on('disconnect',  () =>{
+                console.log('已经下线')
+            })
+        },
+        quitSocket() {
+            socket.disconnect();
         }
-    }
+    },
 }
 </script>
 
@@ -710,7 +810,7 @@ a {
 }
 /* 主要内容区域 */
 .main-content {
-    overflow: auto;
+    overflow: hidden;
     height: 100%;
     width: 100%;
     background: #eee;

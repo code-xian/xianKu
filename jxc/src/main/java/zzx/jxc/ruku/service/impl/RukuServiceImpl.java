@@ -14,6 +14,7 @@ import zzx.jxc.dto.OrderCartDTO;
 import zzx.jxc.enums.OrderStatusEnum;
 import zzx.jxc.enums.ResultEnum;
 import zzx.jxc.exception.SellException;
+import zzx.jxc.foodStock.Dao.FoodStockDao;
 import zzx.jxc.foodStock.service.FoodStockService;
 import zzx.jxc.ruku.dao.RukuDao;
 import zzx.jxc.ruku.dao.RukuDetailDao;
@@ -25,6 +26,8 @@ import zzx.jxc.shouhuo.dao.ShouhuoDetailDao;
 import zzx.jxc.shouhuo.entity.ShouhuoDetail;
 import zzx.jxc.shouhuo.entity.ShouhuoMaster;
 import zzx.jxc.shouhuo.service.ShouhuoService;
+import zzx.jxc.stockLog.Dao.LogDao;
+import zzx.jxc.stockLog.entity.StockLog;
 import zzx.jxc.util.DetailKeyUtil;
 import zzx.jxc.util.ddbhUtil;
 
@@ -49,6 +52,10 @@ public class RukuServiceImpl implements RukuService {
     private ShouhuoDetailDao shouhuoDetailDao;
     @Autowired
     private FoodStockService foodStockService;
+    @Autowired
+    private FoodStockDao foodStockDao;
+    @Autowired
+    private LogDao logDao;
 
 
     @Override
@@ -151,8 +158,28 @@ public class RukuServiceImpl implements RukuService {
         if (save == null) {
             throw new SellException(ResultEnum.ORDER_AUDIT_FAIL);
         }
-                //4.加库存 在审核通过才加库存
+        //4.加库存 在审核通过才加库存
         List<OrderCartDTO> collect = findOne(rukuId).getDetailList().stream().map(e -> new OrderCartDTO(e.getFoodId(), e.getFoodQuantity(), e.getStockId())).collect(Collectors.toList());
         foodStockService.increaseStock(collect);
+        //生成库存日志
+        createLog(rukuId);
+    }
+
+    @Override
+    public void createLog(String rukuId) {
+        RukuOrderInfoVO one = findOne(rukuId);
+        for (RukuDetail rukuDetail : one.getDetailList()) {
+            StockLog stockLog = new StockLog();
+            stockLog.setFoodName(rukuDetail.getFoodName());
+            stockLog.setFoodId(rukuDetail.getFoodId());
+            stockLog.setStockId(rukuDetail.getStockId());
+            stockLog.setStockName(rukuDetail.getStockName());
+            stockLog.setDocumentNumber(rukuId);
+            stockLog.setDocumentType(1);
+            stockLog.setIncOrDec("增加");
+            stockLog.setQuantity(rukuDetail.getFoodQuantity());
+            stockLog.setRestStock(foodStockDao.findStockByFoodIdAndStockId(rukuDetail.getFoodId(), rukuDetail.getStockId()));
+            logDao.save(stockLog);
+        }
     }
 }

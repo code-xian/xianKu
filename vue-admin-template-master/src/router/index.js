@@ -34,6 +34,11 @@ export const asyncRoutes = {
         name: 'msg',
         component: () => import('../views/message/Msg.vue')
     },
+    'orderAmount': {
+        path: 'orderAmount',
+        name: 'orderAmount',
+        component: () => import('../views/message/OrderAmount.vue')
+    },
     'userinfo': {
         path: 'userinfo',
         name: 'userinfo',
@@ -69,11 +74,11 @@ export const asyncRoutes = {
         name: 'foodList',
         component: () => import('../views/stock/FoodList/FoodList.vue')
     },
-    'transferList' : {
-        path: 'transferList',
-        name: 'transferList',
-        component: () => import('../views/stock/transfer/TransferList.vue')
-    },
+    // 'transferList' : {
+    //     path: 'transferList',
+    //     name: 'transferList',
+    //     component: () => import('../views/stock/transfer/TransferList.vue')
+    // },
     'sendList' : {
         path: 'sendList',
         name: 'sendList',
@@ -114,12 +119,12 @@ export const asyncRoutes = {
         name: 'exchangedSale',
         component: () => import('../views/sale/exchangeSale/ExchangeList.vue')
     },
-    customer:{
+    'customer':{
         path:'customer',
         name:'customer',
         component:() => import('../views/unit/Customer.vue')
     },
-    supplier:{
+    'supplier':{
         path:'supplier',
         name:'supplier',
         component:() => import('../views/unit/Supplier.vue')

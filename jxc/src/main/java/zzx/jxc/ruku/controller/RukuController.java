@@ -3,6 +3,7 @@ package zzx.jxc.ruku.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import zzx.jxc.VO.ResultVO;
 import zzx.jxc.VO.RukuOrderInfoVO;
@@ -43,7 +44,7 @@ public class RukuController {
                              @RequestParam Integer size
     ){
         try {
-            PageRequest pageRequest = PageRequest.of(page-1, size);
+            PageRequest pageRequest = PageRequest.of(page-1, size, Sort.by(Sort.Direction.DESC, "createTime"));
             RukuMaster rukuMaster = new RukuMaster();
             rukuMaster.setRukuId(rukuId);
             rukuMaster.setSupplierName(supplierName);
