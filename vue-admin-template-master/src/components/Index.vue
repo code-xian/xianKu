@@ -57,7 +57,7 @@
                     <div class="h-right">
                         <!-- 消息 -->
                         <div class="notice-c" @click="info" title="查看新消息">
-                            <div :class="{newMsg: hasNewMsg}"></div>
+                            <div :class="{newMsg: msgNum==0?false:hasNewMsg}"></div>
                             <Icon type="ios-notifications-outline" />
                         </div>
                         <!-- 用户头像 -->
@@ -144,7 +144,7 @@
             showLoading: false, // 是否显示loading
             hasNewMsg: true, // 是否有新消息
             isShowRouter: true,
-            msgNum: '10', // 新消息条数
+            msgNum: this.$store.state.msg.rowCount, // 新消息条数
             // 标签栏         标签标题     路由名称
             // 数据格式 {text: '首页', name: 'home'}
             // 用于缓存打开的路由 在标签栏上展示
@@ -213,7 +213,6 @@
     //     })
     // },
     mounted() {
-
         this.getDataList2();
         // this.initSocket();
         this.initSocketio();
@@ -364,7 +363,6 @@
             this.currentPage = name
             this.crumbs = this.paths[name]
             this.$router.replace({name, params})
-
             if (!this.keepAliveData.includes(name)) {
                 // 如果标签超过8个 则将第一个标签删除
                 if (this.tagsArry.length == 8) {

@@ -7,7 +7,7 @@
 </template>
 
 <script>
-    import {getCookie, removeArray} from "./utils";
+    import {getCookie, removeArray,getCurrentDate} from "./utils";
 
 export default {
     name: 'App',

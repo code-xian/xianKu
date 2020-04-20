@@ -139,13 +139,14 @@
                 </el-table-column>
                 <el-table-column
                         fixed="right"
-                        width="100"
+                        width="200"
                         header-align="center"
                         align="center"
                         label="操作">
                     <template slot-scope="scope">
                         <el-button type="primary" size="mini"  @click="audit(scope.row.saleId,true,scope.row.purchaseAmount)" v-if="scope.row.saleStatus==12">审核</el-button>
                         <el-button type="primary" size="mini"  @click="audit(scope.row.saleId,false,scope.row.purchaseAmount)" v-if="scope.row.saleStatus==10||scope.row.saleStatus==11">详情</el-button>
+                        <el-button type="primary" size="mini"  @click="fahuo(scope.row.saleId,false,scope.row.purchaseAmount)" v-if="scope.row.saleStatus==10||scope.row.saleStatus==11">发货</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -197,7 +198,10 @@
                 dataListLoading: false,
                 dataListSelections: [],
                 addVisible: false,
-                seeDetailVisible : false
+                seeDetailVisible : false,
+                currentPage:'',
+                crumbs: '',
+                tagsArry:[]
             }
         },
         mounted() {
@@ -232,7 +236,24 @@
                     this.dataListLoading = false;
                 });
             },
-            // getDataList2() {     //todo
+            fahuo(){
+                this.gotoPage('sendList')
+            },
+            // 跳转页面 路由名称和参数
+            gotoPage(name, params) {
+                this.currentPage = name
+                this.crumbs = this.paths[name]
+                this.$router.replace({name, params})
+
+                // if (!this.keepAliveData.includes(name)) {
+                //     // 如果标签超过8个 则将第一个标签删除
+                //     if (this.tagsArry.length == 8) {
+                //         this.tagsArry.shift()
+                //     }
+                //     this.tagsArry.push({name, text: this.nameToTitle[name]})
+                // }
+            },
+            // getDataList2() {
             //     this.$socket.emit('push_event',this.typeList)
             //     this.dataListLoading = true;
             //     this.$http({

@@ -138,11 +138,7 @@
                                 width="300"
                                 label="移库数量">
                             <template slot-scope="scope">
-<!--                                        :rules="form.rules2.saleQuantity"-->
-                                <el-form-item
-                                        :prop="'dataList.' + scope.$index + '.saleQuantity'"
-                                >
-<!--                                        :rules="scope.row.flg? rules:[]"-->
+                                <el-form-item :prop="'dataList.' + scope.$index + '.saleQuantity'">
                                     <el-input-number v-model="scope.row.saleQuantity" type="number" controls-position="right" :min="1" :max="scope.row.stock"></el-input-number>
 <!--                                    <input type="text" v-model="scope.$index">-->
                                 </el-form-item>

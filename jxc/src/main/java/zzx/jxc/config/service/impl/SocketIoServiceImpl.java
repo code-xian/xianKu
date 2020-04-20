@@ -8,6 +8,7 @@ import zzx.jxc.config.PushMessage;
 import zzx.jxc.config.entity.LoginUser;
 import zzx.jxc.config.entity.PushStockMsg;
 import zzx.jxc.config.service.SocketIoService;
+import zzx.jxc.foodInfo.dao.FoodInfoDao;
 import zzx.jxc.foodStock.Dao.FoodStockDao;
 import zzx.jxc.foodStock.entity.FoodStock;
 import zzx.jxc.stock.dao.StockDao;
@@ -43,6 +44,9 @@ public class SocketIoServiceImpl implements SocketIoService {
 
     @Autowired
     private StockDao stockDao;
+
+    @Autowired
+    private FoodInfoDao foodInfoDao;
 
     /**
      * 功能描述：当前的service被初始化的时候执行以下的方法
@@ -86,7 +90,7 @@ public class SocketIoServiceImpl implements SocketIoService {
             for (FoodStock foodStock : allByStockIdIn) {
                 if (foodStock.getStock() <= 10) {
                     System.out.println(foodStock.getStockId() + "仓库的" + foodStock.getFoodId() + "食品低于警戒线,请及时采购补充");
-                    client.sendEvent("stock",foodStock.getStockId() + "仓库的" + foodStock.getFoodId() + "食品低于警戒线,请及时采购补充");
+                    client.sendEvent("stock",stockDao.findStockByStockId(foodStock.getStockId()).getStockName()+"("+foodStock.getStockId() + ")仓库的" + foodInfoDao.findFoodInfoByFoodId(foodStock.getFoodId()).getFoodName()+"("+foodStock.getFoodId() + ")食品低于警戒线,请及时采购补充.");
                 }
             }
 

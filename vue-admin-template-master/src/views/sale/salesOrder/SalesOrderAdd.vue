@@ -153,13 +153,20 @@
                         >
                         </el-table-column>
                         <el-table-column
+                                prop="stock"
+                                header-align="center"
+                                align="center"
+                                label="库存"
+                        >
+                        </el-table-column>
+                        <el-table-column
                                 header-align="center"
                                 align="center"
                                 prop="saleQuantity"
                                 width="300"
                                 label="数量">
                             <template slot-scope="scope">
-                                <el-input-number v-model="scope.row.saleQuantity" type="number" controls-position="right" :min="1"></el-input-number>
+                                <el-input-number v-model="scope.row.saleQuantity" type="number" controls-position="right" :min="1" :max="scope.row.stock"></el-input-number>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -360,6 +367,7 @@
                 //
                 // }
                 for (let n = 0; n < list.length; n++) {
+                    console.log(list);
                     this.dataList.push(list[n]);
                 }
                 this.$nextTick(() => {
@@ -371,7 +379,7 @@
             getInfoData() {
 
             },
-            //添加食品
+            //跳转添加食品页面
             addFood() {
                 this.foodListDialogVisible = true;
                 this.$nextTick(() => {

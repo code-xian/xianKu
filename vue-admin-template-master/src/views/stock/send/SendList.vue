@@ -172,7 +172,7 @@
 <script>
     import FahuoAudit from "./FahuoAudit";
     export default {
-        name: "Send",
+        name: "sendList",
         data() {
             return{
                 auditVisible:false,

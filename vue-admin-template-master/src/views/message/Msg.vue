@@ -12,7 +12,7 @@
 <!--                            <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
                         </div>
                     <div v-for="(key,index) in messageList" :key="index">
-                        {{key.message}}  <span style="float: right">{{key.time}}</span>
+                        <p style="line-height: 26px">{{key}}</p>
                     </div>
                 </el-card>
                 </el-col>
@@ -23,7 +23,7 @@
 <!--                        <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>-->
                     </div>
                     <div v-for="o in 4" :key="o" >
-                        {{'列表内容 ' + o }}
+
                     </div>
                 </el-card>
 
@@ -40,32 +40,8 @@ export default {
     name: 'msg',
     data() {
         return{
-            messageList:[]
+            messageList:this.$store.state.msg.message
         }
-    },
-    created() {
-        // console.log(333,this.$store.state.msg.message);
-        for (var i of this.$store.state.msg.message) {
-            console.log(123);
-            this.messageList.push({
-                message:i,
-                time:getCurrentDate()
-            })
-        }
-        // console.log(333);
-        // for (var i of this.$store.state.msg.message) {
-        //     console.log(123);
-        //     this.messageList.push({
-        //         message:i,
-        //         time:getCurrentDate()
-        //     })
-        // }
-    },
-    mounted() {
-
-    },
-    activated() {
-
     },
     destroyed() {
         console.log(666);
@@ -91,10 +67,15 @@ export default {
 .content{
     height: calc(100vh - 160px);
     .card-title{
+        color:grey;
+        font-size: 18px;
+        font-weight: 600;
         text-align: center;
     }
 }
 .title {
+    text-shadow: 5px 5px 5px rgba(0,0,0,0.5);/*黑色阴影，用rgba表示，透明度为0.9*/ ;
+    letter-spacing:8px;
     margin-bottom: 32px;
     line-height: 120px;
     font-size: 30px;
